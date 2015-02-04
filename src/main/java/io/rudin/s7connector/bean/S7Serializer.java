@@ -103,6 +103,11 @@ public class S7Serializer
 		}
 	}
 
+	public synchronized <T> void update(T obj, int dbNum, int byteOffset) throws S7Exception
+	{
+		//TODO
+	}
+	
 	/**
 	 * Dispenses an Object from the mapping of the Datablock
 	 * @param beanClass
@@ -115,7 +120,7 @@ public class S7Serializer
 	{
 		try
 		{
-			T obj = beanClass.newInstance();
+			T obj = beanClass.newInstance(); //TODO: not needed!
 			BeanParseResult result = BeanParser.parse(obj);
 			byte[] buffer = connector.read(DaveArea.DB, dbNum, result.blockSize, byteOffset);
 			return extractBytes(beanClass, buffer, 0);
