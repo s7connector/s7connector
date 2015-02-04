@@ -48,28 +48,13 @@ The bits have to be set manually for boolean values (e.g: 0x01 for first bit tru
 Maven Repository
 ---------------------------------------------------
 
-To access the latest snapshots and releases:
-
-Add repository to your pom.xml:
- <repositories>
-  <repository>
-   <releases>
-    <enabled>true</enabled>
-    <updatePolicy>always</updatePolicy>
-    <checksumPolicy>fail</checksumPolicy>
-   </releases>
-   <id>rudin-informatik</id>
-   <name>Thomas Rudin</name>
-   <url>http://rudin-informatik.ch/maven2</url>
-  </repository>
- </repositories>
+To access the latest release
 
 Add artifact to your pom.xml:
  <dependency>
-  <groupId>ch.rudin-informatik.s7connector</groupId>
-  <artifactId>S7Connector</artifactId>
-  <version>0.1-SNAPSHOT</version>
-  <type>jar</type>
+	<artifactId>s7connector</artifactId>
+	<groupId>io.rudin.s7connector</groupId>
+	<version>1.0</version>
  </dependency>
 
 Libnodave
