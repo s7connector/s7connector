@@ -28,15 +28,6 @@ Close connection
 Use the bean serializer
 ---------------------------------------------------
 
-```java
- S7Serializer s = new S7Serializer(c);
- DB fromPlc = s.dispense(DB.class, 100, 0); //Creates a bean from DB100 at offset 0
- 
- DB toPlc = new DB();
- toPlc.value = Math.PI;
- s.store(toPlc, 101, 0); //Saves the bean to DB101 at offset 0
-```
-
 Annotated bean:
 
 ```java
@@ -44,14 +35,31 @@ Annotated bean:
  {
   @S7Variable(type=S7Type.REAL, byteOffset=0)
   public double value;
+  
+  @S7Variable(type=S7Type.BOOL, byteOffset=0, bitOffset=1)
+  public boolean myBit;
  }
 ```
+
+Dispense/Store
+
+```java
+ S7Serializer s = new S7Serializer(c);
+ DB fromPlc = s.dispense(DB.class, 100, 0); //Creates a bean from DB100 at offset 0
+ 
+ DB toPlc = new DB();
+ toPlc.value = Math.PI;
+ toPlc.myBit = true;
+ s.store(toPlc, 101, 0); //Saves the bean to DB101 at offset 0
+```
+
+
 
 
 Limitations
 ---------------------------------------------------
 
-At the moment, only byte[] are supported.
+At the moment, only byte[] are supported (except for the Serializer component).
 The bits have to be set manually for boolean values (e.g: 0x01 for first bit true)
 
 
