@@ -6551,8 +6551,8 @@ Error message and password prompt
 <div created="20160310084652938" modified="20160526065539760" title="$:/state/tab/moresidebar-401116514">
 <pre>$:/core/ui/MoreSideBar/Missing</pre>
 </div>
-<div created="20160203194636322" modified="20160526065336443" title="$:/state/tab/sidebar--1835078512">
-<pre>$:/core/ui/SideBar/More</pre>
+<div created="20160203194636322" modified="20160526070012759" title="$:/state/tab/sidebar--1835078512">
+<pre>$:/core/ui/SideBar/Open</pre>
 </div>
 <div created="20160203194853319" modified="20160203194853319" title="$:/state/tabs/controlpanel/toolbars-1345989671">
 <pre>$:/core/ui/ControlPanel/Toolbars/PageControls</pre>
@@ -6578,7 +6578,7 @@ Error message and password prompt
 <div created="20160526064849912" modified="20160526064849912" title="$:/state/toc/S7Connector-Tutorial-342844959">
 <pre>open</pre>
 </div>
-<div list="Templates/Config S7BaseConnection S7Connector Meta Tutorial [[Connecting to PLC]]" title="$:/StoryList">
+<div list="S7Connector Meta Tutorial [[Bean serializer]] [[Connecting to PLC]]" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -6898,8 +6898,8 @@ This plugin contains tools to help slice up long texts into individual tiddlers.
 <div author="JeremyRuston" core-version="&gt;=5.0.0" created="20160525070512788" dependents="" description="Basic theme" modified="20160525070512788" name="Vanilla" original-plugin-type="theme" original-tags="" original-title="$:/themes/tiddlywiki/vanilla" original-type="application/json" server-url="http://tiddlywiki.com/library/v5.1.11/index.html" tags="$:/tags/RemoteAssetInfo" title="$:/temp/RemoteAssetInfo/http://tiddlywiki.com/library/v5.1.11/index.html/$:/themes/tiddlywiki/vanilla" type="text/vnd.tiddlywiki" version="5.1.11">
 <pre></pre>
 </div>
-<div created="20160310084642726" modified="20160526065829865" title="$:/temp/search">
-<pre>Templ</pre>
+<div created="20160310084642726" modified="20160526070012136" title="$:/temp/search">
+<pre></pre>
 </div>
 <div created="20160525073248847" modified="20160525073248847" tags="$:/tags/ServerConnection" title="$:/temp/ServerConnection/http://tiddlywiki.com/library/v5.1.11/index.html" url="http://tiddlywiki.com/library/v5.1.11/index.html">
 <pre>loaded</pre>
@@ -7046,7 +7046,7 @@ Dispense/Store
 <div color="#bb35ce" created="20160525071210171" modified="20160525075606633" tags="S7Connector" title="Changelog">
 <pre>{{||Templates/Spawnable}}</pre>
 </div>
-<div created="20160526064852327" modified="20160526065801139" tags="Tutorial" title="Connecting to PLC">
+<div created="20160526064852327" modified="20160526070009161" tags="Tutorial" title="Connecting to PLC">
 <pre>
 Currently only TCP-Connections are supported.
 Altough you could override the [[S7BaseConnection]] and provide a [[S7Connection]] manually
@@ -7056,7 +7056,7 @@ Altough you could override the [[S7BaseConnection]] and provide a [[S7Connection
 !!! simply via IP/Host:
 
 ```java
-S7Connector connector = new S7TCPConnection(&quot;10.0.0.240&quot;, 0, 2);
+S7Connector connector = new S7TCPConnection(&quot;10.0.0.240&quot;);
 ```
 * This takes the defaults for [[rack]] and [[slot]] (rack=0, slot=2)
 
