@@ -123,6 +123,8 @@ Error message and password prompt
 
 <li>$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/new-journal</li>
 
+<li>$:/config/WikiParserRules/Inline/wikilink</li>
+
 <li>$:/core</li>
 
 <li>$:/DefaultTiddlers</li>
@@ -365,6 +367,9 @@ Error message and password prompt
 </div>
 <div created="20160203194856298" modified="20160203194856298" title="$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/new-journal">
 <pre>show</pre>
+</div>
+<div created="20160527104626180" modified="20160527104626180" title="$:/config/WikiParserRules/Inline/wikilink">
+<pre>disable</pre>
 </div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="TiddlyWiki5 core" list="readme" plugin-priority="0" plugin-type="plugin" title="$:/core" type="application/json" version="5.1.11">
 <pre>{
@@ -6415,8 +6420,9 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20160203194621429" modified="20160525070815989" title="$:/DefaultTiddlers">
-<pre>S7Connector</pre>
+<div created="20160203194621429" modified="20160527104636458" title="$:/DefaultTiddlers">
+<pre>S7Connector
+Quickstart</pre>
 </div>
 <div status="complete" title="$:/Import">
 <pre>The following tiddlers were imported:
@@ -6524,7 +6530,7 @@ Error message and password prompt
 <div created="20160525070545303" modified="20160525070557814" title="$:/state/add-plugin-info/$:/temp/ServerConnection/http://tiddlywiki.com/library/v5.1.11/index.html/$:/temp/RemoteAssetInfo/http://tiddlywiki.com/library/v5.1.11/index.html/$:/plugins/tiddlywiki/github-fork-ribbon">
 <pre>no</pre>
 </div>
-<div created="20160525072432366" modified="20160526065847161" title="$:/state/DevMode">
+<div created="20160525072432366" modified="20160527104914970" title="$:/state/DevMode">
 <pre>false</pre>
 </div>
 <div created="20160525072959055" modified="20160525073233724" title="$:/state/plugin-info--896887961-$:/plugins/tiddlywiki/github-fork-ribbon">
@@ -6545,8 +6551,8 @@ Error message and password prompt
 <div created="20160525070508382" modified="20160525073236876" title="$:/state/tab--86143343">
 <pre>$:/core/ui/ControlPanel/Plugins/Installed/Plugins</pre>
 </div>
-<div created="20160203194724220" modified="20160526064909324" title="$:/state/tab-1749438307">
-<pre>$:/core/ui/ControlPanel/Settings</pre>
+<div created="20160203194724220" modified="20160527104628721" title="$:/state/tab-1749438307">
+<pre>$:/core/ui/ControlPanel/Info</pre>
 </div>
 <div created="20160310084652938" modified="20160526065539760" title="$:/state/tab/moresidebar-401116514">
 <pre>$:/core/ui/MoreSideBar/Missing</pre>
@@ -6572,13 +6578,13 @@ Error message and password prompt
 <div created="20160526065515808" modified="20160526065516616" title="$:/state/toc/S7Connector-Glossary-342844959">
 <pre>close</pre>
 </div>
-<div created="20160526065824507" modified="20160526065824507" title="$:/state/toc/S7Connector-Meta-342844959">
-<pre>open</pre>
+<div created="20160526065824507" modified="20160527104610921" title="$:/state/toc/S7Connector-Meta-342844959">
+<pre>close</pre>
 </div>
-<div created="20160526064849912" modified="20160526064849912" title="$:/state/toc/S7Connector-Tutorial-342844959">
-<pre>open</pre>
+<div created="20160526064849912" modified="20160527104649486" title="$:/state/toc/S7Connector-Tutorial-342844959">
+<pre>close</pre>
 </div>
-<div list="S7Connector Meta Tutorial [[Bean serializer]] [[Connecting to PLC]]" title="$:/StoryList">
+<div list="Templates/Config S7Connector Quickstart" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -6898,7 +6904,7 @@ This plugin contains tools to help slice up long texts into individual tiddlers.
 <div author="JeremyRuston" core-version="&gt;=5.0.0" created="20160525070512788" dependents="" description="Basic theme" modified="20160525070512788" name="Vanilla" original-plugin-type="theme" original-tags="" original-title="$:/themes/tiddlywiki/vanilla" original-type="application/json" server-url="http://tiddlywiki.com/library/v5.1.11/index.html" tags="$:/tags/RemoteAssetInfo" title="$:/temp/RemoteAssetInfo/http://tiddlywiki.com/library/v5.1.11/index.html/$:/themes/tiddlywiki/vanilla" type="text/vnd.tiddlywiki" version="5.1.11">
 <pre></pre>
 </div>
-<div created="20160310084642726" modified="20160526070012136" title="$:/temp/search">
+<div created="20160310084642726" modified="20160527104913844" title="$:/temp/search">
 <pre></pre>
 </div>
 <div created="20160525073248847" modified="20160525073248847" tags="$:/tags/ServerConnection" title="$:/temp/ServerConnection/http://tiddlywiki.com/library/v5.1.11/index.html" url="http://tiddlywiki.com/library/v5.1.11/index.html">
@@ -7047,8 +7053,7 @@ Dispense/Store
 <pre>{{||Templates/Spawnable}}</pre>
 </div>
 <div created="20160526064852327" modified="20160526070009161" tags="Tutorial" title="Connecting to PLC">
-<pre>
-Currently only TCP-Connections are supported.
+<pre>Currently only TCP-Connections are supported.
 Altough you could override the [[S7BaseConnection]] and provide a [[S7Connection]] manually
 
 !! Connectiong over TCP
@@ -7135,13 +7140,13 @@ XML Snippet for your POM:
 ```</pre>
 </div>
 <div created="20160526065425300" modified="20160526065436326" tags="Glossary" title="rack">
-<pre>
-Rack-id of the S7 CPU/CP</pre>
+<pre>Rack-id of the S7 CPU/CP</pre>
 </div>
-<div color="#54a63c" created="20160203194624416" modified="20160525075548442" title="S7Connector">
-<pre>''
-Java library for S7 PLC's
-''
+<div color="#54a63c" created="20160203194624416" modified="20160527104853621" title="S7Connector">
+<pre>! Java library for S7 PLC's
+
+
+!! [[Travis|https://travis-ci.org/s7connector/s7connector]]: [img[https://travis-ci.org/s7connector/s7connector.svg?branch=master]]
 
 {{||Templates/Spawnable}}
 
@@ -7151,8 +7156,7 @@ Java library for S7 PLC's
 This project is based on libnodave http://libnodave.sourceforge.net/</pre>
 </div>
 <div created="20160526065444667" modified="20160526065512960" tags="Glossary" title="slot">
-<pre>
-Slot-ID for the CPU/CP</pre>
+<pre>Slot-ID for the CPU/CP</pre>
 </div>
 <div created="20160525071113513" modified="20160525071147989" tags="S7Connector" title="Supported PLC's">
 <pre>TODO</pre>
