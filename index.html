@@ -311,6 +311,8 @@ Error message and password prompt
 
 <li>Connecting to PLC</li>
 
+<li>Editmode</li>
+
 <li>Glossary</li>
 
 <li>Installing</li>
@@ -331,8 +333,6 @@ Error message and password prompt
 
 <li>Template</li>
 
-<li>Templates/Config</li>
-
 <li>Templates/CreateButton</li>
 
 <li>Templates/Journalized</li>
@@ -347,7 +347,7 @@ Error message and password prompt
 
 <li>v1.1</li>
 
-<li>v1.2</li>
+<li>v2.0</li>
 
 </ul>
 </p>
@@ -6557,7 +6557,7 @@ Quickstart</pre>
 <div created="20160310084652938" modified="20160526065539760" title="$:/state/tab/moresidebar-401116514">
 <pre>$:/core/ui/MoreSideBar/Missing</pre>
 </div>
-<div created="20160203194636322" modified="20160526070012759" title="$:/state/tab/sidebar--1835078512">
+<div created="20160203194636322" modified="20160530065022394" title="$:/state/tab/sidebar--1835078512">
 <pre>$:/core/ui/SideBar/Open</pre>
 </div>
 <div created="20160203194853319" modified="20160203194853319" title="$:/state/tabs/controlpanel/toolbars-1345989671">
@@ -6572,17 +6572,17 @@ Quickstart</pre>
 <div created="20160526065843610" modified="20160526065843610" title="$:/state/toc/Meta-Template-342844959">
 <pre>open</pre>
 </div>
-<div created="20160525072525969" modified="20160525072715770" title="$:/state/toc/S7Connector-Changelog-342844959">
+<div created="20160525072525969" modified="20160530065038831" title="$:/state/toc/S7Connector-Changelog-342844959">
 <pre>close</pre>
 </div>
 <div created="20160526065515808" modified="20160526065516616" title="$:/state/toc/S7Connector-Glossary-342844959">
 <pre>close</pre>
 </div>
-<div created="20160526065824507" modified="20160527104610921" title="$:/state/toc/S7Connector-Meta-342844959">
+<div created="20160526065824507" modified="20160530064952053" title="$:/state/toc/S7Connector-Meta-342844959">
 <pre>close</pre>
 </div>
-<div created="20160526064849912" modified="20160527104649486" title="$:/state/toc/S7Connector-Tutorial-342844959">
-<pre>close</pre>
+<div created="20160526064849912" modified="20160530065040688" title="$:/state/toc/S7Connector-Tutorial-342844959">
+<pre>open</pre>
 </div>
 <div list="S7Connector Quickstart" title="$:/StoryList">
 <pre></pre>
@@ -7072,6 +7072,14 @@ S7Connector connector = new S7TCPConnection(&quot;10.0.0.240&quot;, 0, 2);
 ```
 </pre>
 </div>
+<div created="20160525072334100" modified="20160530064939198" tags="$:/tags/SideBar Meta" title="Editmode">
+<pre>&lt;$button set=&quot;$:/state/DevMode&quot; setTo=&quot;true&quot;&gt;Edit mode enable&lt;/$button&gt;
+&lt;$button set=&quot;$:/state/DevMode&quot; setTo=&quot;false&quot;&gt;Edit mode disable&lt;/$button&gt;
+
+&lt;$reveal type=&quot;match&quot; state=&quot;$:/state/DevMode&quot; text=&quot;true&quot;&gt;
+&lt;h3&gt;Edit mode&lt;/h3&gt;
+&lt;/$reveal&gt;</pre>
+</div>
 <div created="20160526065358124" modified="20160526065402115" tags="S7Connector" title="Glossary">
 <pre>{{||Templates/Spawnable}}</pre>
 </div>
@@ -7142,13 +7150,13 @@ XML Snippet for your POM:
 <div created="20160526065425300" modified="20160526065436326" tags="Glossary" title="rack">
 <pre>Rack-id of the S7 CPU/CP</pre>
 </div>
-<div color="#54a63c" created="20160203194624416" modified="20160527105114392" title="S7Connector">
+<div color="#54a63c" created="20160203194624416" modified="20160530065012063" title="S7Connector">
 <pre>! Java library for S7 PLC's  [img[https://travis-ci.org/s7connector/s7connector.svg?branch=master]]
 
 * Links
 ** Continuous integration: https://travis-ci.org/s7connector/s7connector
 ** Source/Issues: https://github.com/s7connector/s7connector
-** Doc: https://rawgit.com/s7connector/s7connector/master/index.html
+** Doc: https://s7connector.github.io/s7connector/
 
 {{||Templates/Spawnable}}
 
@@ -7165,14 +7173,6 @@ This project is based on libnodave http://libnodave.sourceforge.net/</pre>
 </div>
 <div color="#b81f36" created="20160421104519667" modified="20160526065840554" tags="Meta" title="Template">
 <pre>{{||Templates/Spawnable}}</pre>
-</div>
-<div created="20160525072334100" modified="20160525072545367" tags="Template" title="Templates/Config">
-<pre>&lt;$button set=&quot;$:/state/DevMode&quot; setTo=&quot;true&quot;&gt;Edit mode enable&lt;/$button&gt;
-&lt;$button set=&quot;$:/state/DevMode&quot; setTo=&quot;false&quot;&gt;Edit mode disable&lt;/$button&gt;
-
-&lt;$reveal type=&quot;match&quot; state=&quot;$:/state/DevMode&quot; text=&quot;true&quot;&gt;
-&lt;h3&gt;Edit mode&lt;/h3&gt;
-&lt;/$reveal&gt;</pre>
 </div>
 <div created="20160414094139021" modified="20160525072451499" tags="Template" title="Templates/CreateButton">
 <pre>&lt;$reveal type=&quot;match&quot; state=&quot;$:/state/DevMode&quot; text=&quot;true&quot;&gt;
@@ -7222,7 +7222,7 @@ sort=&quot;!tag[Journal]nsort[title]&quot; /&gt;
 * [[#4|https://github.com/rudin-io/s7connector/issues/2]] Release
 </pre>
 </div>
-<div created="20160525071610452" modified="20160525071813182" tags="Changelog" title="v1.2">
+<div created="20160525071610452" modified="20160530065032400" tags="Changelog" title="v2.0">
 <pre>!! Next release</pre>
 </div>
 
