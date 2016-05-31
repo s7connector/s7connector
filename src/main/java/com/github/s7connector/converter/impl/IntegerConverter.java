@@ -1,5 +1,5 @@
 /*
-Copyright 2016 Thomas Rudin
+Copyright 2016 S7connector members (github.com/s7connector)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

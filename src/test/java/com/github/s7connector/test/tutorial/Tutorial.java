@@ -1,9 +1,5 @@
 package com.github.s7connector.test.tutorial;
 
-/**
- * @author Thomas Rudin (thomas@rudin-informatik.ch)
- *
- */
 public class Tutorial
 {
 	
