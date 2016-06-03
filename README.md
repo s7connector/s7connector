@@ -21,21 +21,57 @@ Features
 
 * **Apache License**
 
+
 Getting Started
 ----------------
 
-Read our [Documentation](https://s7connector.github.io/s7connector/)
+### Simple read/write example
+```java
+	//Create connection
+	S7Connector connector = new S7TCPConnection("10.0.0.240");
+
+	//Read from DB100 10 bytes
+	byte[] bs = connector.read(DaveArea.DB, 100, 10, 0);
+
+	//Set some bytes
+	bs[0] = 0x00;
+		
+	//Write to DB100 10 bytes
+	connector.write(DaveArea.DB, 101, 0, bs);
+
+	//Close connection
+	connector.close();
+```
+
+More in the [Documentation](https://s7connector.github.io/s7connector/)
+
+
+Maven directions
+------------------------
+
+```xml
+<dependency>
+    <groupId>io.rudin.s7connector</groupId>
+    <artifactId>s7connector</artifactId>
+    <version>1.1</version>
+</dependency>
+```
+
 
 Need Help? Found a bug?
 ------------------------
 
 Feel free to [submit an issue](https://github.com/s7connector/s7connector/issues). And, of course, feel free to submit pull requests with bug fixes or changes.
 
+
 Contributors
 ------------
 
 Pull requests are always welcome.
 
+
+
 Special Thanks
 --------------
+
 This project is based on [libnodave](http://libnodave.sourceforge.net/)
