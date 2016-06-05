@@ -24,88 +24,14 @@ import com.github.s7connector.impl.nodave.Nodave;
 import com.github.s7connector.impl.nodave.PLCinterface;
 import com.github.s7connector.impl.nodave.TCPConnection;
 
-
-
 /**
  * TCP_Connection to a S7 PLC
- * 
+ *
  * @author Thomas Rudin
  * @href http://libnodave.sourceforge.net/
  *
  */
-public class S7TCPConnection extends S7BaseConnection
-{
-
-	/**
-	 * Creates a new Instance to the given host
-	 * @param host
-	 * @throws EthernetControlException
-	 */
-	public S7TCPConnection(String host) throws S7Exception
-	{
-		this(host, 0, 2);
-	}
-
-
-	/**
-	 * Creates a new Instance to the given host, rack and slot
-	 * @param host
-	 * @throws EthernetControlException
-	 */
-	public S7TCPConnection(String host, int rack, int slot) throws S7Exception
-	{
-		this.host = host;
-		this.rack = rack;
-		this.slot = slot;
-		this.setupSocket();
-	}
-
-	/**
-	 * Rack and slot number
-	 */
-	private int rack, slot;
-
-	/**
-	 * The Host to connect to
-	 */
-	private String host;
-
-	/**
-	 * Sets up the socket
-	 */
-	private void setupSocket()
-	{
-		try
-		{
-			socket = new Socket();
-			socket.setSoTimeout(2000);
-			socket.connect(new InetSocketAddress(host, 102));
-			
-			di = new PLCinterface(
-					socket.getOutputStream(),
-					socket.getInputStream(),
-					"IF1",
-					DaveArea.LOCAL.getCode(), //TODO Local MPI-Address?
-					Nodave.PROTOCOL_ISOTCP
-					);
-
-			dc = new TCPConnection(di, rack, slot);
-			int res = dc.connectPLC();
-			checkResult(res);
-
-			super.init(dc);
-		}
-		catch (Exception e)
-		{
-			throw new S7Exception("constructor", e);
-		}
-
-	}
-
-	/**
-	 * The Interface
-	 */
-	private PLCinterface di;
+public class S7TCPConnection extends S7BaseConnection {
 
 	/**
 	 * The COnnection
@@ -113,22 +39,85 @@ public class S7TCPConnection extends S7BaseConnection
 	private TCPConnection dc;
 
 	/**
+	 * The Interface
+	 */
+	private PLCinterface di;
+
+	/**
+	 * The Host to connect to
+	 */
+	private final String host;
+
+	/**
+	 * Rack and slot number
+	 */
+	private final int rack, slot;
+
+	/**
 	 * The Socket
 	 */
 	private Socket socket;
 
+	/**
+	 * Creates a new Instance to the given host
+	 *
+	 * @param host
+	 * @throws EthernetControlException
+	 */
+	public S7TCPConnection(final String host) throws S7Exception {
+		this(host, 0, 2);
+	}
+
+	/**
+	 * Creates a new Instance to the given host, rack and slot
+	 *
+	 * @param host
+	 * @throws EthernetControlException
+	 */
+	public S7TCPConnection(final String host, final int rack, final int slot) throws S7Exception {
+		this.host = host;
+		this.rack = rack;
+		this.slot = slot;
+		this.setupSocket();
+	}
+
 	@Override
-	public void close()
-	{
-		try
-		{
-			socket.close();
-		}
-		catch (Exception e)
-		{
+	public void close() {
+		try {
+			this.socket.close();
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	protected void finalize() throws Throwable {
+		this.close();
+	}
+
+	/**
+	 * Sets up the socket
+	 */
+	private void setupSocket() {
+		try {
+			this.socket = new Socket();
+			this.socket.setSoTimeout(2000);
+			this.socket.connect(new InetSocketAddress(this.host, 102));
+
+			this.di = new PLCinterface(this.socket.getOutputStream(), this.socket.getInputStream(), "IF1",
+					DaveArea.LOCAL.getCode(), // TODO Local MPI-Address?
+					Nodave.PROTOCOL_ISOTCP);
+
+			this.dc = new TCPConnection(this.di, this.rack, this.slot);
+			final int res = this.dc.connectPLC();
+			checkResult(res);
+
+			super.init(this.dc);
+		} catch (final Exception e) {
+			throw new S7Exception("constructor", e);
+		}
+
+	}
 
 }
