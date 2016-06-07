@@ -57,6 +57,11 @@ public class S7TCPConnection extends S7BaseConnection {
 	 * The Socket
 	 */
 	private Socket socket;
+	
+	/**
+	 * The port to connect to
+	 */
+	private int port;
 
 	/**
 	 * Creates a new Instance to the given host
@@ -70,14 +75,26 @@ public class S7TCPConnection extends S7BaseConnection {
 
 	/**
 	 * Creates a new Instance to the given host, rack and slot
+	 * Uses port 102 as default
 	 *
 	 * @param host
 	 * @throws EthernetControlException
 	 */
 	public S7TCPConnection(final String host, final int rack, final int slot) throws S7Exception {
+		this(host, rack, slot, 102);
+	}
+
+	/**
+	 * Creates a new Instance to the given host, rack, slot and port
+	 *
+	 * @param host
+	 * @throws EthernetControlException
+	 */
+	public S7TCPConnection(final String host, final int rack, final int slot, int port) throws S7Exception {
 		this.host = host;
 		this.rack = rack;
 		this.slot = slot;
+		this.port = port;
 		this.setupSocket();
 	}
 
@@ -103,7 +120,7 @@ public class S7TCPConnection extends S7BaseConnection {
 		try {
 			this.socket = new Socket();
 			this.socket.setSoTimeout(2000);
-			this.socket.connect(new InetSocketAddress(this.host, 102));
+			this.socket.connect(new InetSocketAddress(this.host, port));
 
 			this.di = new PLCinterface(this.socket.getOutputStream(), this.socket.getInputStream(), "IF1",
 					DaveArea.LOCAL.getCode(), // TODO Local MPI-Address?
