@@ -18,50 +18,49 @@ package com.github.s7connector.converter.impl;
 import com.github.s7connector.converter.base.S7Serializable;
 import com.github.s7connector.impl.utils.S7Type;
 
-public class IntegerConverter implements S7Serializable
-{
+public class IntegerConverter implements S7Serializable {
 
-	
 	private static final int OFFSET_HIGH_BYTE = 0;
 	private static final int OFFSET_LOW_BYTE = 1;
 
+	/** {@inheritDoc} */
 	@Override
-	public void insert(Object javaType, byte[] buffer, int byteOffset, int bitOffset, int size)
-	{
-		Integer value = (Integer)javaType;
-		byte lower = (byte)( ( value >> 0 ) & 0xFF );
-		byte higher = (byte)( ( value  >> 8 ) & 0xFF );
-		buffer[byteOffset+OFFSET_LOW_BYTE] = lower;
-		buffer[byteOffset+OFFSET_HIGH_BYTE] = higher;
-	}
+	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
+		final byte lower = buffer[byteOffset + OFFSET_LOW_BYTE];
+		final byte higher = buffer[byteOffset + OFFSET_HIGH_BYTE];
 
-	@Override
-	public <T> T extract(Class<T> targetClass, byte[] buffer, int byteOffset, int bitOffset)
-	{
-		byte lower = buffer[byteOffset+OFFSET_LOW_BYTE];
-		byte higher = buffer[byteOffset+OFFSET_HIGH_BYTE];
-		
-		Integer i = (int)(lower & 0xFF) | (int)( (higher << 8) & 0xFF00);
-		
+		final Integer i = (lower & 0xFF) | ((higher << 8) & 0xFF00);
+
 		return targetClass.cast(i);
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public int getSizeInBytes()
-	{
-		return 2;
+	public S7Type getS7Type() {
+		return S7Type.WORD;
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public int getSizeInBits()
-	{
+	public int getSizeInBits() {
 		return 0;
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public S7Type getS7Type()
-	{
-		return S7Type.WORD;
+	public int getSizeInBytes() {
+		return 2;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void insert(final Object javaType, final byte[] buffer, final int byteOffset, final int bitOffset,
+			final int size) {
+		final Integer value = (Integer) javaType;
+		final byte lower = (byte) ((value >> 0) & 0xFF);
+		final byte higher = (byte) ((value >> 8) & 0xFF);
+		buffer[byteOffset + OFFSET_LOW_BYTE] = lower;
+		buffer[byteOffset + OFFSET_HIGH_BYTE] = higher;
 	}
 
 }

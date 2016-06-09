@@ -17,9 +17,8 @@ package com.github.s7connector.bean.parser;
 
 import java.util.Vector;
 
-public class BeanParseResult
-{
-	
+public final class BeanParseResult {
+
 	/**
 	 * The needed blocksize
 	 */
@@ -28,6 +27,6 @@ public class BeanParseResult
 	/**
 	 * The Bean entries
 	 */
-	public Vector<BeanEntry> entries = new Vector<BeanEntry>();
-	
+	public Vector<BeanEntry> entries = new Vector<>();
+
 }

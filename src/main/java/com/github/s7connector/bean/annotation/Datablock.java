@@ -23,12 +23,11 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for a datablock
+ * 
  * @author Thomas Rudin
- *
  */
-@Target(value={ElementType.TYPE})
+@Target(value = { ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Datablock
-{
+public @interface Datablock {
 }

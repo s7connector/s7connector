@@ -24,47 +24,43 @@ import com.github.s7connector.impl.utils.S7Type;
  * @author Thomas Rudin (thomas@rudin-informatik.ch)
  *
  */
-public class CONT_C
-{
+public class CONT_C {
 
-	@S7Variable(type=S7Type.BOOL, byteOffset=0, bitOffset=0)
-	public boolean MAN_ON;
+	@S7Variable(type = S7Type.BOOL, byteOffset = 0, bitOffset = 6)
+	public boolean D_SEL;
 
-	@S7Variable(type=S7Type.BOOL, byteOffset=0, bitOffset=2)
-	public boolean P_SEL;
+	@S7Variable(type = S7Type.REAL, byteOffset = 20)
+	public double GAIN;
 
-	@S7Variable(type=S7Type.BOOL, byteOffset=0, bitOffset=3)
+	@S7Variable(type = S7Type.BOOL, byteOffset = 0, bitOffset = 3)
 	public boolean I_SEL;
 
-	@S7Variable(type=S7Type.BOOL, byteOffset=0, bitOffset=6)
-	public boolean D_SEL;
-	
-	@S7Variable(type=S7Type.REAL, byteOffset=6)
-	public double SP_INT;
-
-	@S7Variable(type=S7Type.REAL, byteOffset=10)
-	public double PV_IN;
-
-	@S7Variable(type=S7Type.REAL, byteOffset=20)
-	public double GAIN;
-	
-	@S7Variable(type=S7Type.TIME, byteOffset=24)
-	public long TN;
-
-	@S7Variable(type=S7Type.TIME, byteOffset=28)
-	public long TV;
-
-	@S7Variable(type=S7Type.REAL, byteOffset=72)
+	@S7Variable(type = S7Type.REAL, byteOffset = 72)
 	public double LMN;
 
-	@Override
-	public String toString()
-	{
-		return "CONT_C [MAN_ON=" + MAN_ON + ", P_SEL=" + P_SEL + ", I_SEL="
-				+ I_SEL + ", D_SEL=" + D_SEL + ", SP_INT=" + SP_INT
-				+ ", PV_IN=" + PV_IN + ", GAIN=" + GAIN + ", TN=" + TN
-				+ ", TV=" + TV + ", LMN=" + LMN + "]";
-	}
+	@S7Variable(type = S7Type.BOOL, byteOffset = 0, bitOffset = 0)
+	public boolean MAN_ON;
 
+	@S7Variable(type = S7Type.BOOL, byteOffset = 0, bitOffset = 2)
+	public boolean P_SEL;
+
+	@S7Variable(type = S7Type.REAL, byteOffset = 10)
+	public double PV_IN;
+
+	@S7Variable(type = S7Type.REAL, byteOffset = 6)
+	public double SP_INT;
+
+	@S7Variable(type = S7Type.TIME, byteOffset = 24)
+	public long TN;
+
+	@S7Variable(type = S7Type.TIME, byteOffset = 28)
+	public long TV;
+
+	@Override
+	public String toString() {
+		return "CONT_C [MAN_ON=" + this.MAN_ON + ", P_SEL=" + this.P_SEL + ", I_SEL=" + this.I_SEL + ", D_SEL="
+				+ this.D_SEL + ", SP_INT=" + this.SP_INT + ", PV_IN=" + this.PV_IN + ", GAIN=" + this.GAIN + ", TN="
+				+ this.TN + ", TV=" + this.TV + ", LMN=" + this.LMN + "]";
+	}
 
 }

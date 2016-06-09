@@ -23,13 +23,12 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for array-declaration
+ * 
  * @author Thomas Rudin
- *
  */
-@Target(value={ElementType.FIELD})
+@Target(value = { ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Array
-{
+public @interface Array {
 	int size();
 }

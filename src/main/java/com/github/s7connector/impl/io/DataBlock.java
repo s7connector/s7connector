@@ -17,21 +17,49 @@ package com.github.s7connector.impl.io;
 
 import com.github.s7connector.impl.S7Connector;
 
+// TODO: Auto-generated Javadoc
 /**
- * Datablock implementation
- * @author Thomas Rudin (thomas@rudin-informatik.ch)
+ * Datablock implementation.
  *
+ * @author Thomas Rudin (thomas@rudin-informatik.ch)
  */
-public class DataBlock
-{
-	
-	public DataBlock(S7Connector connector, int dbNum)
-	{
+public final class DataBlock {
+
+	/** The connector. */
+	private final S7Connector connector;
+
+	/** The db num. */
+	private final int dbNum;
+
+	/**
+	 * Instantiates a new data block.
+	 *
+	 * @param connector
+	 *            the connector
+	 * @param dbNum
+	 *            the db num
+	 */
+	public DataBlock(final S7Connector connector, final int dbNum) {
 		this.connector = connector;
 		this.dbNum = dbNum;
 	}
 
-	S7Connector connector;
-	
-	int dbNum;
+	/**
+	 * Gets the connector.
+	 *
+	 * @return the connector
+	 */
+	public S7Connector getConnector() {
+		return this.connector;
+	}
+
+	/**
+	 * Gets the db num.
+	 *
+	 * @return the db num
+	 */
+	public int getDbNum() {
+		return this.dbNum;
+	}
+
 }
