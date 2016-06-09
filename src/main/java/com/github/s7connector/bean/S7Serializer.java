@@ -27,197 +27,206 @@ import com.github.s7connector.exception.S7Exception;
 import com.github.s7connector.impl.S7Connector;
 import com.github.s7connector.impl.nodave.DaveArea;
 
-public class S7Serializer
-{
-	
-	/**
-	 * Local Logger
-	 */
+/**
+ * The Class S7Serializer is responsible for serializing S7 TCP Connection
+ */
+public final class S7Serializer {
+
+	/** Local Logger. */
 	private static final Logger logger = LoggerFactory.getLogger(S7Serializer.class);
 
-	public S7Serializer(S7Connector connector)
-	{
-		this.connector = connector;
-	}
-
 	/**
-	 * The Connector
-	 */
-	private S7Connector connector;
-
-	/**
-	 * Extracts bytes from a buffer
+	 * Extracts bytes from a buffer.
+	 *
+	 * @param <T>
+	 *            the generic type
 	 * @param beanClass
+	 *            the bean class
 	 * @param buffer
+	 *            the buffer
 	 * @param byteOffset
-	 * @return
+	 *            the byte offset
+	 * @return the t
 	 */
-	public static <T> T extractBytes(Class<T> beanClass, byte[] buffer, int byteOffset)
-	{
-		try
-		{
-			T obj = beanClass.newInstance();
+	public static <T> T extractBytes(final Class<T> beanClass, final byte[] buffer, final int byteOffset) {
+		try {
+			final T obj = beanClass.newInstance();
 
-			BeanParseResult result = BeanParser.parse(beanClass);
+			final BeanParseResult result = BeanParser.parse(beanClass);
 
-			for (BeanEntry entry: result.entries)
-			{
+			for (final BeanEntry entry : result.entries) {
 				Object value = null;
 
-				if (entry.isArray)
-				{
+				if (entry.isArray) {
 					value = Array.newInstance(entry.type, entry.arraySize);
-					for (int i=0; i<entry.arraySize; i++)
-					{
-						Object component = entry.serializer.extract(
-								entry.type,
-								buffer,
-								entry.byteOffset + byteOffset + ( i * entry.s7type.getByteSize() ),
-								entry.bitOffset + ( i * entry.s7type.getBitSize() )
-								);
+					for (int i = 0; i < entry.arraySize; i++) {
+						final Object component = entry.serializer.extract(entry.type, buffer,
+								entry.byteOffset + byteOffset + (i * entry.s7type.getByteSize()),
+								entry.bitOffset + (i * entry.s7type.getBitSize()));
 						Array.set(value, i, component);
 					}
-				}
-				else
-				{
-					value = entry.serializer.extract(
-							entry.type,
-							buffer,
-							entry.byteOffset + byteOffset,
-							entry.bitOffset
-							);
+				} else {
+					value = entry.serializer.extract(entry.type, buffer, entry.byteOffset + byteOffset,
+							entry.bitOffset);
 				}
 
 				entry.field.set(obj, value);
 			}
 
 			return obj;
-		}
-		catch (Exception e)
-		{
+		} catch (final Exception e) {
 			throw new S7Exception("extractBytes", e);
 		}
 	}
 
-	public synchronized <T> void update(T obj, int dbNum, int byteOffset) throws S7Exception
-	{
-		//TODO
-	}
-	
 	/**
-	 * Dispenses an Object from the mapping of the Datablock
-	 * @param beanClass
-	 * @param dbNum
-	 * @param byteOffset
-	 * @return
-	 * @throws S7Exception
-	 */
-	public synchronized <T> T dispense(Class<T> beanClass, int dbNum, int byteOffset) throws S7Exception
-	{
-		try
-		{
-			T obj = beanClass.newInstance(); //TODO: not needed!
-			BeanParseResult result = BeanParser.parse(obj);
-			byte[] buffer = connector.read(DaveArea.DB, dbNum, result.blockSize, byteOffset);
-			return extractBytes(beanClass, buffer, 0);
-		}
-		catch (Exception e)
-		{
-			throw new S7Exception("dispense", e);
-		}
-	}
-
-	public synchronized <T> T dispense(Class<T> beanClass, int dbNum, int byteOffset, int blockSize) throws S7Exception
-	{
-		try
-		{
-			byte[] buffer = connector.read(DaveArea.DB, dbNum, blockSize, byteOffset);
-			return extractBytes(beanClass, buffer, 0);
-		}
-		catch (Exception e)
-		{
-			throw new S7Exception("dispense dbnum("+dbNum+") byteoffset("+byteOffset+") blocksize("+blockSize+")", e);
-		}
-	}
-
-	/**
-	 * Inserts the bytes to the buffer
+	 * Inserts the bytes to the buffer.
+	 *
 	 * @param bean
+	 *            the bean
 	 * @param buffer
+	 *            the buffer
 	 * @param byteOffset
+	 *            the byte offset
 	 */
-	public static void insertBytes(Object bean, byte[] buffer, int byteOffset)
-	{
-		try
-		{
-			BeanParseResult result = BeanParser.parse(bean);
+	public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) {
+		try {
+			final BeanParseResult result = BeanParser.parse(bean);
 
-			for (BeanEntry entry: result.entries)
-			{
-				Object fieldValue = entry.field.get(bean);
+			for (final BeanEntry entry : result.entries) {
+				final Object fieldValue = entry.field.get(bean);
 
-				if (fieldValue != null)
-				{
-					if (entry.isArray)
-					{
-						for (int i=0; i<entry.arraySize; i++)
-						{
-							Object arrayItem = Array.get(fieldValue, i);
+				if (fieldValue != null) {
+					if (entry.isArray) {
+						for (int i = 0; i < entry.arraySize; i++) {
+							final Object arrayItem = Array.get(fieldValue, i);
 
-							if (arrayItem != null)
-							{
-								entry.serializer.insert(
-										arrayItem,
-										buffer,
-										entry.byteOffset + byteOffset + ( i * entry.s7type.getByteSize() ),
-										entry.bitOffset + ( i * entry.s7type.getBitSize() ),
-										entry.size
-										);
+							if (arrayItem != null) {
+								entry.serializer.insert(arrayItem, buffer,
+										entry.byteOffset + byteOffset + (i * entry.s7type.getByteSize()),
+										entry.bitOffset + (i * entry.s7type.getBitSize()), entry.size);
 							}
 						}
-					}
-					else
-					{
-						entry.serializer.insert(
-								fieldValue,
-								buffer,
-								entry.byteOffset + byteOffset,
-								entry.bitOffset,
-								entry.size
-								);
+					} else {
+						entry.serializer.insert(fieldValue, buffer, entry.byteOffset + byteOffset, entry.bitOffset,
+								entry.size);
 					}
 				}
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (final Exception e) {
 			throw new S7Exception("insertBytes", e);
 		}
 	}
 
-	/**
-	 * Stores an Object to the Datablock
-	 * @param bean
-	 * @param dbNum
-	 * @param byteOffset
-	 */
-	public synchronized void store(Object bean, int dbNum, int byteOffset)
-	{
-		try
-		{
-			BeanParseResult result = BeanParser.parse(bean);
+	/** The Connector. */
+	private final S7Connector connector;
 
-			byte[] buffer = new byte[result.blockSize];
+	/**
+	 * Instantiates a new s7 serializer.
+	 *
+	 * @param connector
+	 *            the connector
+	 */
+	public S7Serializer(final S7Connector connector) {
+		this.connector = connector;
+	}
+
+	/**
+	 * Dispenses an Object from the mapping of the Datablock.
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param beanClass
+	 *            the bean class
+	 * @param dbNum
+	 *            the db num
+	 * @param byteOffset
+	 *            the byte offset
+	 * @return the t
+	 * @throws S7Exception
+	 *             the s7 exception
+	 */
+	public synchronized <T> T dispense(final Class<T> beanClass, final int dbNum, final int byteOffset)
+			throws S7Exception {
+		try {
+			final T obj = beanClass.newInstance(); // TODO: not needed!
+			final BeanParseResult result = BeanParser.parse(obj);
+			final byte[] buffer = this.connector.read(DaveArea.DB, dbNum, result.blockSize, byteOffset);
+			return extractBytes(beanClass, buffer, 0);
+		} catch (final Exception e) {
+			throw new S7Exception("dispense", e);
+		}
+	}
+
+	/**
+	 * Dispense.
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param beanClass
+	 *            the bean class
+	 * @param dbNum
+	 *            the db num
+	 * @param byteOffset
+	 *            the byte offset
+	 * @param blockSize
+	 *            the block size
+	 * @return the t
+	 * @throws S7Exception
+	 *             the s7 exception
+	 */
+	public synchronized <T> T dispense(final Class<T> beanClass, final int dbNum, final int byteOffset,
+			final int blockSize) throws S7Exception {
+		try {
+			final byte[] buffer = this.connector.read(DaveArea.DB, dbNum, blockSize, byteOffset);
+			return extractBytes(beanClass, buffer, 0);
+		} catch (final Exception e) {
+			throw new S7Exception(
+					"dispense dbnum(" + dbNum + ") byteoffset(" + byteOffset + ") blocksize(" + blockSize + ")", e);
+		}
+	}
+
+	/**
+	 * Stores an Object to the Datablock.
+	 *
+	 * @param bean
+	 *            the bean
+	 * @param dbNum
+	 *            the db num
+	 * @param byteOffset
+	 *            the byte offset
+	 */
+	public synchronized void store(final Object bean, final int dbNum, final int byteOffset) {
+		try {
+			final BeanParseResult result = BeanParser.parse(bean);
+
+			final byte[] buffer = new byte[result.blockSize];
 			logger.trace("store-buffer-size: " + buffer.length);
 
 			insertBytes(bean, buffer, 0);
 
-			connector.write(DaveArea.DB, dbNum, byteOffset, buffer);
-		}
-		catch (Exception e)
-		{
+			this.connector.write(DaveArea.DB, dbNum, byteOffset, buffer);
+		} catch (final Exception e) {
 			throw new S7Exception("store", e);
 		}
+	}
+
+	/**
+	 * Update.
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param obj
+	 *            the obj
+	 * @param dbNum
+	 *            the db num
+	 * @param byteOffset
+	 *            the byte offset
+	 * @throws S7Exception
+	 *             the s7 exception
+	 */
+	public synchronized <T> void update(final T obj, final int dbNum, final int byteOffset) throws S7Exception {
+		// TODO
 	}
 
 }

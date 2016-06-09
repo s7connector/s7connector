@@ -15,31 +15,28 @@ limitations under the License.
 */
 package com.github.s7connector.impl.nodave;
 
-public enum DaveArea
-{
-	SYSINFO(3), // System info of 200 family
-	SYSTEMFLAGS(5), // System flags of 200 family
-	ANALOGINPUTS200(6), // analog inputs of 200 family
-	ANALOGOUTPUTS200(7), // analog outputs of 200 family
-	P(0x80), // Peripheral I/O
-	INPUTS(0x81), OUTPUTS(0x82), FLAGS(0x83), DB(0x84), // data blocks
-	DI(0x85), // instance data blocks
-	LOCAL(0x86), // not tested
-	V(0x87), // local of caller
-	COUNTER(28), // S7 counters
+public enum DaveArea {
+	ANALOGINPUTS200(6), // System info of 200 family
+	ANALOGOUTPUTS200(7), // System flags of 200 family
+	COUNTER(28), // analog inputs of 200 family
+	COUNTER200(30), // analog outputs of 200 family
+	DB(0x84), // Peripheral I/O
+	DI(0x85), FLAGS(0x83), INPUTS(0x81), LOCAL(0x86), // data blocks
+	OUTPUTS(0x82), // instance data blocks
+	P(0x80), // not tested
+	SYSINFO(3), // local of caller
+	SYSTEMFLAGS(5), // S7 counters
 	TIMER(29), // S7 timers
-	COUNTER200(30), // IEC counters (200 family)
-	TIMER200(31); // IEC timers (200 family)
-
-	DaveArea(int code)
-	{
-		this.code = code;
-	}
+	TIMER200(31), // IEC counters (200 family)
+	V(0x87); // IEC timers (200 family)
 
 	int code;
 
-	public int getCode()
-	{
-		return code;
+	DaveArea(final int code) {
+		this.code = code;
+	}
+
+	public int getCode() {
+		return this.code;
 	}
 }

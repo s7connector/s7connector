@@ -23,139 +23,133 @@ import com.github.s7connector.impl.nodave.S7Connection;
 import com.github.s7connector.impl.utils.S7Type;
 
 /**
- * Base-Connection for the S7-PLC Connection
- * Libnodave: http://libnodave.sourceforge.net/
- * @author Thomas Rudin
+ * Base-Connection for the S7-PLC Connection Libnodave:
+ * http://libnodave.sourceforge.net/
  *
+ * @author Thomas Rudin
  */
-public abstract class S7BaseConnection implements S7Connector
-{
+public abstract class S7BaseConnection implements S7Connector {
+
+	/** The Constant MAX_SIZE. */
+	private static final int MAX_SIZE = 96;
+
+	/** The Constant PROPERTY_AREA. */
+	public static final String PROPERTY_AREA = "area";
+
+	/** The Constant PROPERTY_AREANUMBER. */
+	public static final String PROPERTY_AREANUMBER = "areanumber";
+
+	/** The Constant PROPERTY_BYTES. */
+	public static final String PROPERTY_BYTES = "bytes";
+
+	/** The Constant PROPERTY_OFFSET. */
+	public static final String PROPERTY_OFFSET = "offset";
 
 	/**
-	 * Checks the Result
+	 * Checks the Result.
+	 *
 	 * @param libnodaveResult
-	 * @param address
+	 *            the libnodave result
 	 */
-	public static void checkResult(int libnodaveResult)
-	{
-		if (libnodaveResult != Nodave.RESULT_OK)
-		{
-			String msg = Nodave.strerror(libnodaveResult);
+	public static void checkResult(final int libnodaveResult) {
+		if (libnodaveResult != Nodave.RESULT_OK) {
+			final String msg = Nodave.strerror(libnodaveResult);
 			throw new IllegalArgumentException("Result: " + msg);
 		}
 	}
 
+	/**
+	 * Dump data
+	 *
+	 * @param b
+	 *            the byte stream
+	 */
+	protected static void dump(final byte[] b) {
+		for (final byte element : b) {
+			System.out.print(Integer.toHexString(element & 0xFF) + ",");
+		}
+	}
 
+	/** The dc. */
+	private S7Connection dc;
 
-	protected void init(S7Connection dc)
-	{
+	/**
+	 * Initialize the connection
+	 *
+	 * @param dc
+	 *            the connection instance
+	 */
+	protected void init(final S7Connection dc) {
 		this.dc = dc;
 	}
 
-	private S7Connection dc;
-
+	/** {@inheritDoc} */
 	@Override
-	public synchronized byte[] read(DaveArea area, int areaNumber, int bytes, int offset)
-	{
-		if (bytes > MAX_SIZE)
-		{
-			byte[] ret = new byte[bytes];
-			
-			byte[] currentBuffer = this.read(area, areaNumber, MAX_SIZE, offset);
+	public synchronized byte[] read(final DaveArea area, final int areaNumber, final int bytes, final int offset) {
+		if (bytes > MAX_SIZE) {
+			final byte[] ret = new byte[bytes];
+
+			final byte[] currentBuffer = this.read(area, areaNumber, MAX_SIZE, offset);
 			System.arraycopy(currentBuffer, 0, ret, 0, currentBuffer.length);
-			
-			byte[] nextBuffer = this.read(area, areaNumber, bytes-MAX_SIZE, offset+MAX_SIZE);
+
+			final byte[] nextBuffer = this.read(area, areaNumber, bytes - MAX_SIZE, offset + MAX_SIZE);
 			System.arraycopy(nextBuffer, 0, ret, currentBuffer.length, nextBuffer.length);
-			
-			
+
 			return ret;
-		}
-		else
-		{
-			byte[] buffer = new byte[bytes];
-			int ret = dc.readBytes(
-					area,
-					areaNumber,
-					offset,
-					bytes,
-					buffer
-					);
+		} else {
+			final byte[] buffer = new byte[bytes];
+			final int ret = this.dc.readBytes(area, areaNumber, offset, bytes, buffer);
 
 			checkResult(ret);
 			return buffer;
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public byte[] readBlock(int blockNumber, int bytes, int offset)
-	{
-		return read(DaveArea.DB, blockNumber, bytes, offset);
+	public byte[] readBlock(final int blockNumber, final int bytes, final int offset) {
+		return this.read(DaveArea.DB, blockNumber, bytes, offset);
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public <T> T readObject(Class<T> javaType, S7Type s7type, DaveArea area, int areaNumber, int byteOffset, int bitOffset)
-	{
-		try
-		{
-			byte[] buffer = read(area, areaNumber, s7type.getByteSize(), byteOffset);
-			S7Serializable s = s7type.getSerializer().newInstance();
-			T ret = s.extract(javaType, buffer, byteOffset, bitOffset);
+	public <T> T readObject(final Class<T> javaType, final S7Type s7type, final DaveArea area, final int areaNumber,
+			final int byteOffset, final int bitOffset) {
+		try {
+			final byte[] buffer = this.read(area, areaNumber, s7type.getByteSize(), byteOffset);
+			final S7Serializable s = s7type.getSerializer().newInstance();
+			final T ret = s.extract(javaType, buffer, byteOffset, bitOffset);
 			return ret;
-		}
-		catch (Exception e)
-		{
+		} catch (final Exception e) {
 			throw new S7Exception("readObject", e);
 		}
 	}
 
-	private static final int MAX_SIZE = 96;
-
+	/** {@inheritDoc} */
 	@Override
-	public synchronized void write(DaveArea area, int areaNumber, int offset, byte[] buffer)
-	{
-		if (buffer.length > MAX_SIZE)
-		{
-			//Split buffer
-			byte[] subBuffer = new byte[MAX_SIZE];
-			byte[] nextBuffer = new byte[buffer.length - subBuffer.length];
+	public synchronized void write(final DaveArea area, final int areaNumber, final int offset, final byte[] buffer) {
+		if (buffer.length > MAX_SIZE) {
+			// Split buffer
+			final byte[] subBuffer = new byte[MAX_SIZE];
+			final byte[] nextBuffer = new byte[buffer.length - subBuffer.length];
 
 			System.arraycopy(buffer, 0, subBuffer, 0, subBuffer.length);
 			System.arraycopy(buffer, MAX_SIZE, nextBuffer, 0, nextBuffer.length);
 
 			this.write(area, areaNumber, offset, subBuffer);
-			this.write(area, areaNumber, offset+subBuffer.length, nextBuffer);
-		}
-		else
-		{
-			//Size fits
-			int ret = dc.writeBytes(
-					area,
-					areaNumber,
-					offset,
-					buffer.length,
-					buffer
-					);
-			//Check return-value
+			this.write(area, areaNumber, offset + subBuffer.length, nextBuffer);
+		} else {
+			// Size fits
+			final int ret = this.dc.writeBytes(area, areaNumber, offset, buffer.length, buffer);
+			// Check return-value
 			checkResult(ret);
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public void writeBlock(int blockNumber, int offset, byte[] buffer)
-	{
-		write(DaveArea.DB, blockNumber, offset, buffer);
+	public void writeBlock(final int blockNumber, final int offset, final byte[] buffer) {
+		this.write(DaveArea.DB, blockNumber, offset, buffer);
 	}
-
-	protected static void dump(byte[] b)
-	{
-		for (int i=0; i<b.length; i++)
-			System.out.print( Integer.toHexString(b[i] & 0xFF) + ",");
-	}
-
-
-	public static final String PROPERTY_AREA = "area";
-	public static final String PROPERTY_AREANUMBER = "areanumber";
-	public static final String PROPERTY_BYTES = "bytes";
-	public static final String PROPERTY_OFFSET = "offset";
 
 }

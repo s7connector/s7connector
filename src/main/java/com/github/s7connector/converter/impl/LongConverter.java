@@ -18,57 +18,53 @@ package com.github.s7connector.converter.impl;
 import com.github.s7connector.converter.base.S7Serializable;
 import com.github.s7connector.impl.utils.S7Type;
 
-public class LongConverter implements S7Serializable
-{
+public final class LongConverter implements S7Serializable {
 
-
+	/** {@inheritDoc} */
 	@Override
-	public void insert(Object javaType, byte[] buffer, int byteOffset, int bitOffset, int size)
-	{
-		Long value = (Long)javaType;
-		byte b1 = (byte)( ( value >> 0 ) & 0xFF );
-		byte b2 = (byte)( ( value  >> 8 ) & 0xFF );
-		byte b3 = (byte)( ( value  >> 16 ) & 0xFF );
-		byte b4 = (byte)( ( value  >> 24 ) & 0xFF );
-		buffer[byteOffset+0] = b1;
-		buffer[byteOffset+1] = b2;
-		buffer[byteOffset+2] = b3;
-		buffer[byteOffset+3] = b4;
-	}
+	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
+		final byte b1 = buffer[byteOffset + 0];
+		final byte b2 = buffer[byteOffset + 1];
+		final byte b3 = buffer[byteOffset + 2];
+		final byte b4 = buffer[byteOffset + 3];
 
-	@Override
-	public <T> T extract(Class<T> targetClass, byte[] buffer, int byteOffset, int bitOffset)
-	{
-		byte b1 = buffer[byteOffset+0];
-		byte b2 = buffer[byteOffset+1];
-		byte b3 = buffer[byteOffset+2];
-		byte b4 = buffer[byteOffset+3];
-		
-		Integer i = 
-				(int)( (b1 << 0) & 0x000000FF) | 
-				(int)( (b2 << 8) & 0x0000FF00) | 
-				(int)( (b3 << 16) & 0x00FF0000) | 
-				(int)( (b4 << 24) & 0xFF000000);
-		
+		final Integer i = ((b1 << 0) & 0x000000FF) | ((b2 << 8) & 0x0000FF00) | ((b3 << 16) & 0x00FF0000)
+				| ((b4 << 24) & 0xFF000000);
+
 		return targetClass.cast(i);
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public int getSizeInBytes()
-	{
-		return 4;
+	public S7Type getS7Type() {
+		return S7Type.WORD;
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public int getSizeInBits()
-	{
+	public int getSizeInBits() {
 		return 0;
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public S7Type getS7Type()
-	{
-		return S7Type.WORD;
+	public int getSizeInBytes() {
+		return 4;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void insert(final Object javaType, final byte[] buffer, final int byteOffset, final int bitOffset,
+			final int size) {
+		final Long value = (Long) javaType;
+		final byte b1 = (byte) ((value >> 0) & 0xFF);
+		final byte b2 = (byte) ((value >> 8) & 0xFF);
+		final byte b3 = (byte) ((value >> 16) & 0xFF);
+		final byte b4 = (byte) ((value >> 24) & 0xFF);
+		buffer[byteOffset + 0] = b1;
+		buffer[byteOffset + 1] = b2;
+		buffer[byteOffset + 2] = b3;
+		buffer[byteOffset + 3] = b4;
 	}
 
 }

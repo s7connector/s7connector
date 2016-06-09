@@ -22,43 +22,42 @@ import com.github.s7connector.impl.utils.S7Type;
 
 /**
  * A Bean-Entry
+ * 
  * @author Thomas Rudin
- *
  */
-public class BeanEntry
-{
-	/**
-	 * The corresponding field
-	 */
-	public Field field;
-	
-	/**
-	 * The Java type
-	 */
-	public Class<?> type;
-	
-	/**
-	 * Offsets and size
-	 */
-	public int byteOffset, bitOffset, size;
-	
-	/**
-	 * The S7 Type
-	 */
-	public S7Type s7type;
-	
-	/**
-	 * The corresponding serializer
-	 */
-	public S7Serializable serializer;
-	
-	/**
-	 * Array type
-	 */
-	public boolean isArray;
-	
+public final class BeanEntry {
 	/**
 	 * The Array size
 	 */
 	public int arraySize;
+
+	/**
+	 * Offsets and size
+	 */
+	public int byteOffset, bitOffset, size;
+
+	/**
+	 * The corresponding field
+	 */
+	public Field field;
+
+	/**
+	 * Array type
+	 */
+	public boolean isArray;
+
+	/**
+	 * The S7 Type
+	 */
+	public S7Type s7type;
+
+	/**
+	 * The corresponding serializer
+	 */
+	public S7Serializable serializer;
+
+	/**
+	 * The Java type
+	 */
+	public Class<?> type;
 }
