@@ -31,7 +31,7 @@ import com.github.s7connector.impl.nodave.TCPConnection;
  * @href http://libnodave.sourceforge.net/
  *
  */
-public class S7TCPConnection extends S7BaseConnection {
+public final class S7TCPConnection extends S7BaseConnection {
 
 	/**
 	 * The COnnection
@@ -49,6 +49,11 @@ public class S7TCPConnection extends S7BaseConnection {
 	private final String host;
 
 	/**
+	 * The port to connect to
+	 */
+	private final int port;
+
+	/**
 	 * Rack and slot number
 	 */
 	private final int rack, slot;
@@ -57,11 +62,6 @@ public class S7TCPConnection extends S7BaseConnection {
 	 * The Socket
 	 */
 	private Socket socket;
-	
-	/**
-	 * The port to connect to
-	 */
-	private int port;
 
 	/**
 	 * Creates a new Instance to the given host
@@ -74,8 +74,8 @@ public class S7TCPConnection extends S7BaseConnection {
 	}
 
 	/**
-	 * Creates a new Instance to the given host, rack and slot
-	 * Uses port 102 as default
+	 * Creates a new Instance to the given host, rack and slot Uses port 102 as
+	 * default
 	 *
 	 * @param host
 	 * @throws EthernetControlException
@@ -90,7 +90,7 @@ public class S7TCPConnection extends S7BaseConnection {
 	 * @param host
 	 * @throws EthernetControlException
 	 */
-	public S7TCPConnection(final String host, final int rack, final int slot, int port) throws S7Exception {
+	public S7TCPConnection(final String host, final int rack, final int slot, final int port) throws S7Exception {
 		this.host = host;
 		this.rack = rack;
 		this.slot = slot;
@@ -120,7 +120,7 @@ public class S7TCPConnection extends S7BaseConnection {
 		try {
 			this.socket = new Socket();
 			this.socket.setSoTimeout(2000);
-			this.socket.connect(new InetSocketAddress(this.host, port));
+			this.socket.connect(new InetSocketAddress(this.host, this.port));
 
 			this.di = new PLCinterface(this.socket.getOutputStream(), this.socket.getInputStream(), "IF1",
 					DaveArea.LOCAL.getCode(), // TODO Local MPI-Address?

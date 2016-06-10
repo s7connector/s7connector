@@ -19,25 +19,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class PLCinterface
-{
+public final class PLCinterface {
+	InputStream in;
 	int localMPI; // the adapter's MPI address
 	String name;
-	int protocol; // The kind of transport used on this interface.
 
 	OutputStream out;
-	InputStream in;
+	int protocol; // The kind of transport used on this interface.
 	int wp, rp;
 
-	public PLCinterface(OutputStream out, InputStream in, String name,
-			int localMPI, int protocol)
-	{
-		init(out, in, name, localMPI, protocol);
+	public PLCinterface(final OutputStream out, final InputStream in, final String name, final int localMPI,
+			final int protocol) {
+		this.init(out, in, name, localMPI, protocol);
 	}
 
-	public void init(OutputStream oStream, InputStream iStream, String name,
-			int localMPI, int protocol)
-	{
+	public void init(final OutputStream oStream, final InputStream iStream, final String name, final int localMPI,
+			final int protocol) {
 		this.out = oStream;
 		this.in = iStream;
 		this.name = name;
@@ -45,49 +42,38 @@ public class PLCinterface
 		this.protocol = protocol;
 	}
 
-	public void write(byte[] b, int start, int len)
-	{
-		try
-		{
-			out.write(b, start, len);
-		} catch (IOException e)
-		{
-			System.err.println("Interface.write: " + e);
-		}
-	}
-
-	public int read(byte[] b, int start, int len)
-	{
+	public int read(final byte[] b, int start, int len) {
 		int res;
-		try
-		{
+		try {
 			int retry = 0;
-			while ((in.available() <= 0) && (retry < 500))
-			{
-				try
-				{
-					if (retry > 0)
-					{
+			while ((this.in.available() <= 0) && (retry < 500)) {
+				try {
+					if (retry > 0) {
 						Thread.sleep(1);
 					}
 					retry++;
-				} catch (InterruptedException e)
-				{
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			res = 0;
-			while ((in.available() > 0) && (len > 0))
-			{
-				res = in.read(b, start, len);
+			while ((this.in.available() > 0) && (len > 0)) {
+				res = this.in.read(b, start, len);
 				start += res;
 				len -= res;
 			}
 			return res;
-		} catch (IOException e)
-		{
+		} catch (final IOException e) {
 			e.printStackTrace();
 			return 0;
+		}
+	}
+
+	public void write(final byte[] b, final int start, final int len) {
+		try {
+			this.out.write(b, start, len);
+		} catch (final IOException e) {
+			System.err.println("Interface.write: " + e);
 		}
 	}
 

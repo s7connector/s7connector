@@ -15,85 +15,106 @@ limitations under the License.
 */
 package com.github.s7connector.impl.nodave;
 
-public class TCPConnection extends S7Connection
-{
+/**
+ * The Class TCPConnection.
+ */
+public final class TCPConnection extends S7Connection {
+
+	/** The rack. */
 	int rack;
+
+	/** The slot. */
 	int slot;
 
-	public TCPConnection(PLCinterface ifa, int rack, int slot)
-	{
+	/**
+	 * Instantiates a new TCP connection.
+	 *
+	 * @param ifa
+	 *            the plc interface
+	 * @param rack
+	 *            the rack
+	 * @param slot
+	 *            the slot
+	 */
+	public TCPConnection(final PLCinterface ifa, final int rack, final int slot) {
 		super(ifa);
 		this.rack = rack;
 		this.slot = slot;
-		PDUstartIn = 7;
-		PDUstartOut = 7;
-	}
-
-	protected int readISOPacket()
-	{
-		int res = iface.read(msgIn, 0, 4);
-		if (res == 4)
-		{
-			int len = (0x100 * msgIn[2]) + msgIn[3];
-			res += iface.read(msgIn, 4, len);
-		}
-		else
-		{
-			return 0;
-		}
-		return res;
-	}
-
-	protected int sendISOPacket(int size)
-	{
-		size += 4;
-		msgOut[0] = (byte) 0x03;
-		msgOut[1] = (byte) 0x0;
-		msgOut[2] = (byte) (size / 0x100);
-		msgOut[3] = (byte) (size % 0x100);
-		/*
-		 * if (messageNumber == 0) { messageNumber = 1; msgOut[11] = (byte)
-		 * ((messageNumber + 1) & 0xff); messageNumber++; messageNumber &= 0xff;
-		 * //!! }
-		 */
-
-		iface.write(msgOut, 0, size);
-		return 0;
-	}
-
-	@Override
-	public int exchange(PDU p1)
-	{
-		msgOut[4] = (byte) 0x02;
-		msgOut[5] = (byte) 0xf0;
-		msgOut[6] = (byte) 0x80;
-		sendISOPacket(3 + p1.hlen + p1.plen + p1.dlen);
-		readISOPacket();
-		return 0;
+		this.PDUstartIn = 7;
+		this.PDUstartOut = 7;
 	}
 
 	/**
 	 * We have our own connectPLC(), but no disconnect() Open connection to a
 	 * PLC. This assumes that dc is initialized by daveNewConnection and is not
 	 * yet used. (or reused for the same PLC ?)
+	 *
+	 * @return the int
 	 */
-	public int connectPLC()
-	{
-		byte[] b4 = { (byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00,
-				(byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0xC1,
-				(byte) 0x02, (byte) 0x01, (byte) 0x00, (byte) 0xC2,
-				(byte) 0x02, (byte) 0x01, (byte) 0x02, (byte) 0xC0,
-				(byte) 0x01, (byte) 0x09 };
+	public int connectPLC() {
+		final byte[] b4 = { (byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+				(byte) 0xC1, (byte) 0x02, (byte) 0x01, (byte) 0x00, (byte) 0xC2, (byte) 0x02, (byte) 0x01, (byte) 0x02,
+				(byte) 0xC0, (byte) 0x01, (byte) 0x09 };
 
-		System.arraycopy(b4, 0, msgOut, 4, b4.length);
-		msgOut[17] = (byte) (rack + 1);
-		msgOut[18] = (byte) slot;
-		sendISOPacket(b4.length);
-		readISOPacket();
+		System.arraycopy(b4, 0, this.msgOut, 4, b4.length);
+		this.msgOut[17] = (byte) (this.rack + 1);
+		this.msgOut[18] = (byte) this.slot;
+		this.sendISOPacket(b4.length);
+		this.readISOPacket();
 		/*
 		 * PDU p = new PDU(msgOut, 7); p.initHeader(1); p.addParam(b61);
 		 * exchange(p); return (0);
 		 */
-		return negPDUlengthRequest();
+		return this.negPDUlengthRequest();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int exchange(final PDU p1) {
+		this.msgOut[4] = (byte) 0x02;
+		this.msgOut[5] = (byte) 0xf0;
+		this.msgOut[6] = (byte) 0x80;
+		this.sendISOPacket(3 + p1.hlen + p1.plen + p1.dlen);
+		this.readISOPacket();
+		return 0;
+	}
+
+	/**
+	 * Read iso packet.
+	 *
+	 * @return the int
+	 */
+	protected int readISOPacket() {
+		int res = this.iface.read(this.msgIn, 0, 4);
+		if (res == 4) {
+			final int len = (0x100 * this.msgIn[2]) + this.msgIn[3];
+			res += this.iface.read(this.msgIn, 4, len);
+		} else {
+			return 0;
+		}
+		return res;
+	}
+
+	/**
+	 * Send iso packet.
+	 *
+	 * @param size
+	 *            the size
+	 * @return the int
+	 */
+	protected int sendISOPacket(int size) {
+		size += 4;
+		this.msgOut[0] = (byte) 0x03;
+		this.msgOut[1] = (byte) 0x0;
+		this.msgOut[2] = (byte) (size / 0x100);
+		this.msgOut[3] = (byte) (size % 0x100);
+		/*
+		 * if (messageNumber == 0) { messageNumber = 1; msgOut[11] = (byte)
+		 * ((messageNumber + 1) & 0xff); messageNumber++; messageNumber &= 0xff;
+		 * //!! }
+		 */
+
+		this.iface.write(this.msgOut, 0, size);
+		return 0;
 	}
 }

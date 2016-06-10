@@ -25,42 +25,36 @@ import com.github.s7connector.impl.utils.S7Type;
 
 /**
  * Defines an Offset in a DB
- * @author Thomas Rudin
  *
+ * @author Thomas Rudin
  */
-@Target(value={ElementType.FIELD})
+@Target(value = { ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface S7Variable
-{
-	/**
-	 * The Byte Offset
-	 * @return
-	 */
-	int byteOffset();
-	
-	/**
-	 * The bit offset, if any
-	 * @return
-	 */
-	int bitOffset() default 0;
-	
-	/**
-	 * The specified size (for String)
-	 * @return
-	 */
-	int size() default 0;
-	
-	/**
-	 * The corresponding S7 Type
-	 * @return
-	 */
-	S7Type type();
-	
+public @interface S7Variable {
 	/**
 	 * The size of the array
-	 * @return
 	 */
 	int arraySize() default 1;
-	
+
+	/**
+	 * The bit offset, if any
+	 */
+	int bitOffset() default 0;
+
+	/**
+	 * The Byte Offset
+	 */
+	int byteOffset();
+
+	/**
+	 * The specified size (for String)
+	 */
+	int size() default 0;
+
+	/**
+	 * The corresponding S7 Type
+	 */
+	S7Type type();
+
 }
