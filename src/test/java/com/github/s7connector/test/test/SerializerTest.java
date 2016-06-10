@@ -26,19 +26,23 @@ import com.github.s7connector.bean.S7Serializer;
 import com.github.s7connector.bean.annotation.Datablock;
 import com.github.s7connector.bean.annotation.S7Variable;
 import com.github.s7connector.impl.utils.S7Type;
-import com.github.s7connector.test.test.connector.DummyConnector;
+import com.github.s7connector.test.test.connector.EchoConnector;
 
-public class DBTest
-{
+public class SerializerTest {
+
+	private static final Random RNG = new Random();
 
 	
 	@Test
-	public void test()
-	{
-		DummyConnector c = new DummyConnector();
+	public void test() {
+		EchoConnector c = new EchoConnector();
 		
 		S7Serializer p = new S7Serializer(c);
 
+		/*
+		 * first level
+		 */
+		
 		MyDB in = new MyDB();
 		in.d = Math.PI;
 		in.str = "Hello World";
@@ -63,18 +67,39 @@ public class DBTest
 		
 		in.timeInMillis = 322222134;
 		
+		for (int i=0; i<in.byteArray.length; i++)
+			in.byteArray[i] = (byte)RNG.nextInt(256);
+		
+		in.byteArray2 = new Byte[10];
+		for (int i=0; i<in.byteArray2.length; i++)
+			in.byteArray2[i] = (byte)RNG.nextInt(256);
+		
+
+		
+		/*
+		 * second level
+		 */
+		
+		in.s = new SubStruct();
 		in.s.subByte = 0x11;
 		
-		Random r = new Random();
-		for (int i=0; i<in.s.subStruct.subBytes.length; i++)
-			in.s.subStruct.subBytes[i] = (byte)r.nextInt(256);
-		for (int i=0; i<in.byteArray.length; i++)
-			in.byteArray[i] = (byte)r.nextInt(256);
-		for (int i=0; i<in.byteArray2.length; i++)
-			in.byteArray2[i] = (byte)r.nextInt(256);
+		/*
+		 * third level
+		 */
 		
+		in.s.subStruct = new SubSubStruct();
+		in.s.subStruct.subBytes = new Byte[10];
+		
+		for (int i=0; i<in.s.subStruct.subBytes.length; i++)
+			in.s.subStruct.subBytes[i] = (byte)RNG.nextInt(256);
+
 		in.str2 = "Test @ end of db";
+
 		in.s.subStruct.deepString = "Very deep string ;)";
+		
+		/*
+		 * EOL
+		 */
 		
 		p.store(in, 0, 0);
 		
@@ -93,6 +118,7 @@ public class DBTest
 		Assert.assertEquals(in.date2, out.date2);
 		Assert.assertEquals(in.timeInMillis, out.timeInMillis);
 		Assert.assertEquals(in.s.subByte, out.s.subByte);
+		Assert.assertEquals(in.s.subStruct.deepString, out.s.subStruct.deepString);
 		
 		for (int i=0; i<in.s.subStruct.subBytes.length; i++)
 			Assert.assertEquals( in.s.subStruct.subBytes[i], out.s.subStruct.subBytes[i] );
@@ -135,17 +161,23 @@ public class DBTest
 		@S7Variable(type=S7Type.DATE_AND_TIME, byteOffset=46)
 		public Date date2;
 		
+		/**
+		 * Initialized array
+		 */
 		@S7Variable(type=S7Type.BYTE, byteOffset=54, arraySize=10)
 		public Byte[] byteArray = new Byte[10];
 		
+		/**
+		 * not initialized array
+		 */
 		@S7Variable(type=S7Type.BYTE, byteOffset=64, arraySize=10)
-		public Byte[] byteArray2 = new Byte[10];
+		public Byte[] byteArray2;
 		
 		@S7Variable(type=S7Type.STRING, byteOffset=74, size=20)
 		public String str2;
 		
 		@S7Variable(type=S7Type.STRUCT, byteOffset=94)
-		public SubStruct s = new SubStruct();
+		public SubStruct s;
 	}
 	
 	@Datablock
@@ -155,14 +187,14 @@ public class DBTest
 		public byte subByte;
 		
 		@S7Variable(type=S7Type.STRUCT, byteOffset=1)
-		public SubSubStruct subStruct = new SubSubStruct();
+		public SubSubStruct subStruct;
 	}
 	
 	@Datablock
 	public static class SubSubStruct
 	{
 		@S7Variable(type=S7Type.BYTE, byteOffset=0, arraySize=10)
-		public Byte[] subBytes = new Byte[10];
+		public Byte[] subBytes;
 
 		@S7Variable(type=S7Type.STRING, byteOffset=10, size=20)
 		public String deepString;
