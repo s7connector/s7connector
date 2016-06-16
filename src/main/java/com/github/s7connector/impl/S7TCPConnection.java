@@ -64,27 +64,6 @@ public final class S7TCPConnection extends S7BaseConnection {
 	private Socket socket;
 
 	/**
-	 * Creates a new Instance to the given host
-	 *
-	 * @param host
-	 * @throws EthernetControlException
-	 */
-	public S7TCPConnection(final String host) throws S7Exception {
-		this(host, 0, 2);
-	}
-
-	/**
-	 * Creates a new Instance to the given host, rack and slot Uses port 102 as
-	 * default
-	 *
-	 * @param host
-	 * @throws EthernetControlException
-	 */
-	public S7TCPConnection(final String host, final int rack, final int slot) throws S7Exception {
-		this(host, rack, slot, 102);
-	}
-
-	/**
 	 * Creates a new Instance to the given host, rack, slot and port
 	 *
 	 * @param host

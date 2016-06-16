@@ -17,7 +17,7 @@ package com.github.s7connector.test.test.example;
 
 import com.github.s7connector.api.DaveArea;
 import com.github.s7connector.api.S7Connector;
-import com.github.s7connector.impl.S7TCPConnection;
+import com.github.s7connector.api.factory.S7ConnectorFactory;
 
 /**
  * @author Thomas Rudin (thomas@rudin-informatik.ch)
@@ -29,7 +29,13 @@ public class PlainTutorialExample
 	public static void main(String[] args) throws Exception
 	{
 		//Open TCP Connection
-		S7Connector connector = new S7TCPConnection("10.0.0.240", 0, 2);
+		S7Connector connector = 
+				S7ConnectorFactory
+				.buildTCPConnector()
+				.withHost("10.0.0.220")
+				.withRack(0)
+				.withSlot(2)
+				.build();
 		
 		//Read from DB100 10 bytes
 		byte[] bs = connector.read(DaveArea.DB, 100, 10, 0);

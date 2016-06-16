@@ -19,8 +19,9 @@ import java.util.Random;
 
 import org.junit.Assert;
 
+import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.api.annotation.S7Variable;
-import com.github.s7connector.impl.S7TCPConnection;
+import com.github.s7connector.api.factory.S7ConnectorFactory;
 import com.github.s7connector.impl.serializer.S7SerializerImpl;
 import com.github.s7connector.impl.utils.S7Type;
 
@@ -37,7 +38,11 @@ public class BigDBTest
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		S7TCPConnection c = new S7TCPConnection("10.0.0.220");
+		S7Connector c = 
+				S7ConnectorFactory
+				.buildTCPConnector()
+				.withHost("10.0.0.220")
+				.build();
 		
 		S7SerializerImpl s = new S7SerializerImpl(c);
 		
