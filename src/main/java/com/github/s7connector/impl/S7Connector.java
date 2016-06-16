@@ -18,7 +18,6 @@ package com.github.s7connector.impl;
 import java.io.Closeable;
 
 import com.github.s7connector.impl.nodave.DaveArea;
-import com.github.s7connector.impl.utils.S7Type;
 
 public interface S7Connector extends Closeable {
 	/**
@@ -33,28 +32,6 @@ public interface S7Connector extends Closeable {
 	public byte[] read(DaveArea area, int areaNumber, int bytes, int offset);
 
 	/**
-	 * Reads a block
-	 * 
-	 * @param blockNumber
-	 * @param bytes
-	 * @param offset
-	 * @return
-	 */
-	public byte[] readBlock(int blockNumber, int bytes, int offset);
-
-	/**
-	 * Reads an Object
-	 * 
-	 * @param type
-	 * @param area
-	 * @param areaNumber
-	 * @param offset
-	 * @return
-	 */
-	public <T> T readObject(Class<T> javaType, S7Type s7type, DaveArea area, int areaNumber, int byteOffset,
-			int bitOffset);
-
-	/**
 	 * Writes an area
 	 * 
 	 * @param area
@@ -64,12 +41,4 @@ public interface S7Connector extends Closeable {
 	 */
 	public void write(DaveArea area, int areaNumber, int offset, byte[] buffer);
 
-	/**
-	 * Writes a block
-	 * 
-	 * @param blockNumber
-	 * @param offset
-	 * @param buffer
-	 */
-	public void writeBlock(int blockNumber, int offset, byte[] buffer);
 }

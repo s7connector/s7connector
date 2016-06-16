@@ -15,12 +15,9 @@ limitations under the License.
 */
 package com.github.s7connector.impl;
 
-import com.github.s7connector.converter.base.S7Serializable;
-import com.github.s7connector.exception.S7Exception;
 import com.github.s7connector.impl.nodave.DaveArea;
 import com.github.s7connector.impl.nodave.Nodave;
 import com.github.s7connector.impl.nodave.S7Connection;
-import com.github.s7connector.impl.utils.S7Type;
 
 /**
  * Base-Connection for the S7-PLC Connection Libnodave:
@@ -105,25 +102,6 @@ public abstract class S7BaseConnection implements S7Connector {
 		}
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public byte[] readBlock(final int blockNumber, final int bytes, final int offset) {
-		return this.read(DaveArea.DB, blockNumber, bytes, offset);
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public <T> T readObject(final Class<T> javaType, final S7Type s7type, final DaveArea area, final int areaNumber,
-			final int byteOffset, final int bitOffset) {
-		try {
-			final byte[] buffer = this.read(area, areaNumber, s7type.getByteSize(), byteOffset);
-			final S7Serializable s = s7type.getSerializer().newInstance();
-			final T ret = s.extract(javaType, buffer, byteOffset, bitOffset);
-			return ret;
-		} catch (final Exception e) {
-			throw new S7Exception("readObject", e);
-		}
-	}
 
 	/** {@inheritDoc} */
 	@Override
@@ -146,10 +124,5 @@ public abstract class S7BaseConnection implements S7Connector {
 		}
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public void writeBlock(final int blockNumber, final int offset, final byte[] buffer) {
-		this.write(DaveArea.DB, blockNumber, offset, buffer);
-	}
 
 }
