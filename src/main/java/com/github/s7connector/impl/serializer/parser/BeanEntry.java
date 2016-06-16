@@ -13,48 +13,51 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.bean.annotation;
+package com.github.s7connector.impl.serializer.parser;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
+import com.github.s7connector.api.S7Serializable;
 import com.github.s7connector.impl.utils.S7Type;
 
 /**
- * Defines an Offset in a DB
- *
+ * A Bean-Entry
+ * 
  * @author Thomas Rudin
  */
-@Target(value = { ElementType.FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface S7Variable {
+public final class BeanEntry {
 	/**
-	 * The size of the array
+	 * The Array size
 	 */
-	int arraySize() default 1;
+	public int arraySize;
 
 	/**
-	 * The bit offset, if any
+	 * Offsets and size
 	 */
-	int bitOffset() default 0;
+	public int byteOffset, bitOffset, size;
 
 	/**
-	 * The Byte Offset
+	 * The corresponding field
 	 */
-	int byteOffset();
+	public Field field;
 
 	/**
-	 * The specified size (for String)
+	 * Array type
 	 */
-	int size() default 0;
+	public boolean isArray;
 
 	/**
-	 * The corresponding S7 Type
+	 * The S7 Type
 	 */
-	S7Type type();
+	public S7Type s7type;
 
+	/**
+	 * The corresponding serializer
+	 */
+	public S7Serializable serializer;
+
+	/**
+	 * The Java type
+	 */
+	public Class<?> type;
 }

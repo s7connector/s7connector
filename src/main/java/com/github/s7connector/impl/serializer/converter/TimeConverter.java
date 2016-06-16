@@ -13,37 +13,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.converter.impl;
+package com.github.s7connector.impl.serializer.converter;
 
-import com.github.s7connector.converter.base.S7Serializable;
 import com.github.s7connector.impl.utils.S7Type;
 
-public final class LongConverter implements S7Serializable {
+public final class TimeConverter extends ByteConverter {
 
 	/** {@inheritDoc} */
 	@Override
 	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
-		final byte b1 = buffer[byteOffset + 0];
-		final byte b2 = buffer[byteOffset + 1];
-		final byte b3 = buffer[byteOffset + 2];
-		final byte b4 = buffer[byteOffset + 3];
+		final byte b1 = super.extract(Byte.class, buffer, byteOffset + 3, bitOffset);
+		final byte b2 = super.extract(Byte.class, buffer, byteOffset + 2, bitOffset);
+		final byte b3 = super.extract(Byte.class, buffer, byteOffset + 1, bitOffset);
+		final byte b4 = super.extract(Byte.class, buffer, byteOffset + 0, bitOffset);
 
-		final Integer i = ((b1 << 0) & 0x000000FF) | ((b2 << 8) & 0x0000FF00) | ((b3 << 16) & 0x00FF0000)
-				| ((b4 << 24) & 0xFF000000);
+		final long l = ((long) b1 & 0xFF) << 0 | ((long) b2 & 0xFF) << 8 | ((long) b3 & 0xFF) << 16
+				| ((long) b4 & 0xFF) << 24;
 
-		return targetClass.cast(i);
+		return targetClass.cast(l);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public S7Type getS7Type() {
-		return S7Type.WORD;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int getSizeInBits() {
-		return 0;
+		return S7Type.TIME;
 	}
 
 	/** {@inheritDoc} */
@@ -56,15 +49,17 @@ public final class LongConverter implements S7Serializable {
 	@Override
 	public void insert(final Object javaType, final byte[] buffer, final int byteOffset, final int bitOffset,
 			final int size) {
-		final Long value = (Long) javaType;
-		final byte b1 = (byte) ((value >> 0) & 0xFF);
-		final byte b2 = (byte) ((value >> 8) & 0xFF);
-		final byte b3 = (byte) ((value >> 16) & 0xFF);
-		final byte b4 = (byte) ((value >> 24) & 0xFF);
-		buffer[byteOffset + 0] = b1;
-		buffer[byteOffset + 1] = b2;
-		buffer[byteOffset + 2] = b3;
-		buffer[byteOffset + 3] = b4;
+		final long l = (Long) javaType;
+
+		final byte b1 = (byte) ((byte) (l >> 0) & 0xFF);
+		final byte b2 = (byte) ((byte) (l >> 8) & 0xFF);
+		final byte b3 = (byte) ((byte) (l >> 16) & 0xFF);
+		final byte b4 = (byte) ((byte) (l >> 24) & 0xFF);
+
+		super.insert(b1, buffer, byteOffset + 3, bitOffset, 1);
+		super.insert(b2, buffer, byteOffset + 2, bitOffset, 1);
+		super.insert(b3, buffer, byteOffset + 1, bitOffset, 1);
+		super.insert(b4, buffer, byteOffset + 0, bitOffset, 1);
 	}
 
 }

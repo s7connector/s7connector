@@ -13,70 +13,58 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.converter.impl;
+package com.github.s7connector.impl.serializer.converter;
 
-import com.github.s7connector.converter.base.S7Serializable;
+import com.github.s7connector.api.S7Serializable;
 import com.github.s7connector.impl.utils.S7Type;
 
-public final class StringConverter implements S7Serializable {
-
-	private static final int OFFSET_CURRENT_LENGTH = 1;
-	private static final int OFFSET_OVERALL_LENGTH = 0;
-	private static final int OFFSET_START = 2;
+public final class LongConverter implements S7Serializable {
 
 	/** {@inheritDoc} */
 	@Override
 	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
-		final int len = buffer[byteOffset + OFFSET_CURRENT_LENGTH];
+		final byte b1 = buffer[byteOffset + 0];
+		final byte b2 = buffer[byteOffset + 1];
+		final byte b3 = buffer[byteOffset + 2];
+		final byte b4 = buffer[byteOffset + 3];
 
-		final byte[] bytes = new byte[len];
+		final Integer i = ((b1 << 0) & 0x000000FF) | ((b2 << 8) & 0x0000FF00) | ((b3 << 16) & 0x00FF0000)
+				| ((b4 << 24) & 0xFF000000);
 
-		for (int i = 0; i < len; i++) {
-			bytes[i] = buffer[byteOffset + OFFSET_START + i];
-		}
-
-		return targetClass.cast(new String(bytes));
+		return targetClass.cast(i);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public S7Type getS7Type() {
-		return S7Type.STRING;
+		return S7Type.WORD;
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int getSizeInBits() {
-		// Not static
 		return 0;
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int getSizeInBytes() {
-		// Not static
-		return 2; // 2 bytes overhead
+		return 4;
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public void insert(final Object javaType, final byte[] buffer, final int byteOffset, final int bitOffset,
 			final int size) {
-		final String value = (String) javaType;
-
-		final int len = value.length();
-
-		if (len > size) {
-			throw new IllegalArgumentException("String to big: " + len);
-		}
-
-		buffer[byteOffset + OFFSET_OVERALL_LENGTH] = (byte) size;
-		buffer[byteOffset + OFFSET_CURRENT_LENGTH] = (byte) len;
-
-		final byte[] strBytes = value.getBytes();
-		for (int i = 0; i < len; i++) {
-			buffer[byteOffset + OFFSET_START + i] = (byte) (strBytes[i] & 0xFF);
-		}
+		final Long value = (Long) javaType;
+		final byte b1 = (byte) ((value >> 0) & 0xFF);
+		final byte b2 = (byte) ((value >> 8) & 0xFF);
+		final byte b3 = (byte) ((value >> 16) & 0xFF);
+		final byte b4 = (byte) ((value >> 24) & 0xFF);
+		buffer[byteOffset + 0] = b1;
+		buffer[byteOffset + 1] = b2;
+		buffer[byteOffset + 2] = b3;
+		buffer[byteOffset + 3] = b4;
 	}
 
 }

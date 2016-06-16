@@ -13,15 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.bean.parser;
+package com.github.s7connector.impl.serializer.parser;
 
 import java.lang.reflect.Field;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.s7connector.bean.annotation.S7Variable;
-import com.github.s7connector.converter.base.S7Serializable;
+import com.github.s7connector.api.S7Serializable;
+import com.github.s7connector.api.annotation.S7Variable;
 import com.github.s7connector.impl.utils.S7Type;
 
 public final class BeanParser {

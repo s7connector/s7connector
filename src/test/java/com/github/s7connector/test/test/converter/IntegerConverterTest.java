@@ -18,7 +18,7 @@ package com.github.s7connector.test.test.converter;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.s7connector.converter.impl.IntegerConverter;
+import com.github.s7connector.impl.serializer.converter.IntegerConverter;
 
 public class IntegerConverterTest
 {

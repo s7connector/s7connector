@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.bean;
+package com.github.s7connector.impl.serializer;
 
 import java.lang.reflect.Array;
 
@@ -22,18 +22,19 @@ import org.slf4j.LoggerFactory;
 
 import com.github.s7connector.api.DaveArea;
 import com.github.s7connector.api.S7Connector;
-import com.github.s7connector.bean.parser.BeanEntry;
-import com.github.s7connector.bean.parser.BeanParseResult;
-import com.github.s7connector.bean.parser.BeanParser;
+import com.github.s7connector.api.S7Serializer;
 import com.github.s7connector.exception.S7Exception;
+import com.github.s7connector.impl.serializer.parser.BeanEntry;
+import com.github.s7connector.impl.serializer.parser.BeanParseResult;
+import com.github.s7connector.impl.serializer.parser.BeanParser;
 
 /**
  * The Class S7Serializer is responsible for serializing S7 TCP Connection
  */
-public final class S7Serializer {
+public final class S7SerializerImpl implements S7Serializer {
 
 	/** Local Logger. */
-	private static final Logger logger = LoggerFactory.getLogger(S7Serializer.class);
+	private static final Logger logger = LoggerFactory.getLogger(S7SerializerImpl.class);
 
 	/**
 	 * Extracts bytes from a buffer.
@@ -127,25 +128,14 @@ public final class S7Serializer {
 	 * @param connector
 	 *            the connector
 	 */
-	public S7Serializer(final S7Connector connector) {
+	public S7SerializerImpl(final S7Connector connector) {
 		this.connector = connector;
 	}
 
-	/**
-	 * Dispenses an Object from the mapping of the Datablock.
-	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param beanClass
-	 *            the bean class
-	 * @param dbNum
-	 *            the db num
-	 * @param byteOffset
-	 *            the byte offset
-	 * @return the t
-	 * @throws S7Exception
-	 *             the s7 exception
+	/* (non-Javadoc)
+	 * @see com.github.s7connector.impl.serializer.S7Serializer#dispense(java.lang.Class, int, int)
 	 */
+	@Override
 	public synchronized <T> T dispense(final Class<T> beanClass, final int dbNum, final int byteOffset)
 			throws S7Exception {
 		try {
@@ -158,23 +148,10 @@ public final class S7Serializer {
 		}
 	}
 
-	/**
-	 * Dispense.
-	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param beanClass
-	 *            the bean class
-	 * @param dbNum
-	 *            the db num
-	 * @param byteOffset
-	 *            the byte offset
-	 * @param blockSize
-	 *            the block size
-	 * @return the t
-	 * @throws S7Exception
-	 *             the s7 exception
+	/* (non-Javadoc)
+	 * @see com.github.s7connector.impl.serializer.S7Serializer#dispense(java.lang.Class, int, int, int)
 	 */
+	@Override
 	public synchronized <T> T dispense(final Class<T> beanClass, final int dbNum, final int byteOffset,
 			final int blockSize) throws S7Exception {
 		try {
@@ -186,16 +163,10 @@ public final class S7Serializer {
 		}
 	}
 
-	/**
-	 * Stores an Object to the Datablock.
-	 *
-	 * @param bean
-	 *            the bean
-	 * @param dbNum
-	 *            the db num
-	 * @param byteOffset
-	 *            the byte offset
+	/* (non-Javadoc)
+	 * @see com.github.s7connector.impl.serializer.S7Serializer#store(java.lang.Object, int, int)
 	 */
+	@Override
 	public synchronized void store(final Object bean, final int dbNum, final int byteOffset) {
 		try {
 			final BeanParseResult result = BeanParser.parse(bean);

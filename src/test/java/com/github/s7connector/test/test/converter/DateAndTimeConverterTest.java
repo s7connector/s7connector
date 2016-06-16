@@ -22,7 +22,7 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.s7connector.converter.impl.DateAndTimeConverter;
+import com.github.s7connector.impl.serializer.converter.DateAndTimeConverter;
 
 public class DateAndTimeConverterTest
 {

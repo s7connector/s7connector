@@ -17,9 +17,10 @@ package com.github.s7connector.test.test;
 
 import java.util.Date;
 
-import com.github.s7connector.bean.S7Serializer;
-import com.github.s7connector.bean.annotation.S7Variable;
+import com.github.s7connector.api.S7Serializer;
+import com.github.s7connector.api.annotation.S7Variable;
 import com.github.s7connector.impl.S7TCPConnection;
+import com.github.s7connector.impl.serializer.S7SerializerImpl;
 import com.github.s7connector.impl.utils.S7Type;
 
 public class RealPLCTest
@@ -99,7 +100,7 @@ public class RealPLCTest
 		
 		S7TCPConnection c = new S7TCPConnection("10.0.0.220");
 		
-		S7Serializer s = new S7Serializer(c);
+		S7Serializer s = new S7SerializerImpl(c);
 		
 		DB db = new DB();
 		db.str = "Hello!";

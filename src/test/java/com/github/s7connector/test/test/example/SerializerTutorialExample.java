@@ -16,8 +16,8 @@ limitations under the License.
 package com.github.s7connector.test.test.example;
 
 import com.github.s7connector.api.S7Connector;
-import com.github.s7connector.bean.S7Serializer;
 import com.github.s7connector.impl.S7TCPConnection;
+import com.github.s7connector.impl.serializer.S7SerializerImpl;
 
 /**
  * @author Thomas Rudin (thomas@rudin-informatik.ch)
@@ -32,7 +32,7 @@ public class SerializerTutorialExample
 		S7Connector connector = new S7TCPConnection("10.0.0.240", 0, 2);
 		
 		//Create serializer
-		S7Serializer serializer = new S7Serializer(connector);
+		S7SerializerImpl serializer = new S7SerializerImpl(connector);
 		
 		//dispense bean from DB100 and offset 0
 		MyDataBean bean1 = serializer.dispense(MyDataBean.class, 100, 0);

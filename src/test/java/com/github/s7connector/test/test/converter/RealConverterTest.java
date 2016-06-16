@@ -20,7 +20,7 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.s7connector.converter.impl.RealConverter;
+import com.github.s7connector.impl.serializer.converter.RealConverter;
 import com.github.s7connector.test.test.converter.base.ConverterBase;
 
 public class RealConverterTest extends ConverterBase

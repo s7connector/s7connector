@@ -15,9 +15,9 @@ limitations under the License.
 */
 package com.github.s7connector.test.test;
 
-import com.github.s7connector.bean.S7Serializer;
 import com.github.s7connector.blocks.CONT_C;
 import com.github.s7connector.impl.S7TCPConnection;
+import com.github.s7connector.impl.serializer.S7SerializerImpl;
 import com.github.s7connector.test.test.base.Timer;
 
 public class PerformanceTest
@@ -32,7 +32,7 @@ public class PerformanceTest
 		
 		S7TCPConnection c = new S7TCPConnection("192.168.0.1");
 		
-		S7Serializer serializer = new S7Serializer(c);
+		S7SerializerImpl serializer = new S7SerializerImpl(c);
 		
 		System.out.println("Connection: " + timer.getMillisAndReset() + " ms");
 

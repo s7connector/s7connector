@@ -21,7 +21,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.s7connector.converter.impl.DateConverter;
+import com.github.s7connector.impl.serializer.converter.DateConverter;
 
 public class DateConverterTest
 {

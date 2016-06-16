@@ -19,7 +19,7 @@ package com.github.s7connector.test.test.converter;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.s7connector.converter.impl.BitConverter;
+import com.github.s7connector.impl.serializer.converter.BitConverter;
 
 public class BitConverterTest
 {

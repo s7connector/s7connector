@@ -15,17 +15,17 @@ limitations under the License.
 */
 package com.github.s7connector.impl.utils;
 
-import com.github.s7connector.converter.base.S7Serializable;
-import com.github.s7connector.converter.impl.BitConverter;
-import com.github.s7connector.converter.impl.ByteConverter;
-import com.github.s7connector.converter.impl.DateAndTimeConverter;
-import com.github.s7connector.converter.impl.DateConverter;
-import com.github.s7connector.converter.impl.IntegerConverter;
-import com.github.s7connector.converter.impl.LongConverter;
-import com.github.s7connector.converter.impl.RealConverter;
-import com.github.s7connector.converter.impl.StringConverter;
-import com.github.s7connector.converter.impl.StructConverter;
-import com.github.s7connector.converter.impl.TimeConverter;
+import com.github.s7connector.api.S7Serializable;
+import com.github.s7connector.impl.serializer.converter.BitConverter;
+import com.github.s7connector.impl.serializer.converter.ByteConverter;
+import com.github.s7connector.impl.serializer.converter.DateAndTimeConverter;
+import com.github.s7connector.impl.serializer.converter.DateConverter;
+import com.github.s7connector.impl.serializer.converter.IntegerConverter;
+import com.github.s7connector.impl.serializer.converter.LongConverter;
+import com.github.s7connector.impl.serializer.converter.RealConverter;
+import com.github.s7connector.impl.serializer.converter.StringConverter;
+import com.github.s7connector.impl.serializer.converter.StructConverter;
+import com.github.s7connector.impl.serializer.converter.TimeConverter;
 
 /**
  * Type of the Address
