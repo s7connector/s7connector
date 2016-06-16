@@ -15,6 +15,8 @@ limitations under the License.
 */
 package com.github.s7connector.impl.nodave;
 
+import java.util.concurrent.Semaphore;
+
 /**
  * This class comprises the variables and methods common to connections to an S7
  * PLC regardless of the type of transport.
@@ -22,28 +24,6 @@ package com.github.s7connector.impl.nodave;
  * @author Thomas Hergenhahn
  */
 public abstract class S7Connection {
-	public class Semaphore {
-		private int value;
-
-		public Semaphore(final int value) {
-			this.value = value;
-		}
-
-		public synchronized void enter() {
-			--this.value;
-			if (this.value < 0) {
-				try {
-					this.wait();
-				} catch (final Exception e) {
-				}
-			}
-		}
-
-		public synchronized void leave() {
-			++this.value;
-			this.notify();
-		}
-	}
 
 	static int tmo_normal = 150;
 	int answLen; // length of last message
@@ -146,7 +126,7 @@ public abstract class S7Connection {
 		} else {
 			errorState |= 2048;
 		}
-		this.semaphore.leave();
+		this.semaphore.release();
 		rs.setErrorState(errorState);
 		return rs;
 	}
@@ -303,31 +283,34 @@ public abstract class S7Connection {
 
 	public int readBytes(final DaveArea area, final int DBnum, final int start, final int len, final byte[] buffer) {
 		int res = 0;
-		this.semaphore.enter();
-		// System.out.println("readBytes");
+		try {
+			this.semaphore.acquire();
+		} catch (final InterruptedException e) {
+			e.printStackTrace();
+		}
 		final PDU p1 = new PDU(this.msgOut, this.PDUstartOut);
 		p1.initReadRequest();
 		p1.addVarToReadRequest(area, DBnum, start, len);
 
 		res = this.exchange(p1);
 		if (res != Nodave.RESULT_OK) {
-			this.semaphore.leave();
+			this.semaphore.release();
 			return res;
 		}
 		final PDU p2 = new PDU(this.msgIn, this.PDUstartIn);
 		res = p2.setupReceivedPDU();
 		if (res != Nodave.RESULT_OK) {
-			this.semaphore.leave();
+			this.semaphore.release();
 			return res;
 		}
 
 		res = p2.testReadResult();
 		if (res != Nodave.RESULT_OK) {
-			this.semaphore.leave();
+			this.semaphore.release();
 			return res;
 		}
 		if (p2.udlen == 0) {
-			this.semaphore.leave();
+			this.semaphore.release();
 			return Nodave.RESULT_CPU_RETURNED_NO_DATA;
 		}
 		/*
@@ -340,7 +323,7 @@ public abstract class S7Connection {
 		this.dataPointer = p2.udata;
 		this.udata = p2.udata;
 		this.answLen = p2.udlen;
-		this.semaphore.leave();
+		this.semaphore.release();
 		return res;
 	}
 
@@ -366,7 +349,7 @@ public abstract class S7Connection {
 	 */
 	public int writeBytes(final DaveArea area, final int DBnum, final int start, final int len, final byte[] buffer) {
 		int errorState = 0;
-		this.semaphore.enter();
+		this.semaphore.release();
 		final PDU p1 = new PDU(this.msgOut, this.PDUstartOut);
 
 		// p1.constructWriteRequest(area, DBnum, start, len, buffer);
@@ -381,14 +364,14 @@ public abstract class S7Connection {
 
 			if (p2.mem[p2.param + 0] == PDU.FUNC_WRITE) {
 				if (p2.mem[p2.data + 0] == (byte) 0xFF) {
-					this.semaphore.leave();
+					this.semaphore.release();
 					return 0;
 				}
 			} else {
 				errorState |= 4096;
 			}
 		}
-		this.semaphore.leave();
+		this.semaphore.release();
 		return errorState;
 	}
 
