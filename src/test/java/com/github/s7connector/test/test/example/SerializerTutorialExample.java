@@ -15,8 +15,8 @@ limitations under the License.
 */
 package com.github.s7connector.test.test.example;
 
+import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.bean.S7Serializer;
-import com.github.s7connector.impl.S7Connector;
 import com.github.s7connector.impl.S7TCPConnection;
 
 /**

@@ -17,6 +17,8 @@ package com.github.s7connector.impl.nodave;
 
 import java.util.concurrent.Semaphore;
 
+import com.github.s7connector.api.DaveArea;
+
 /**
  * This class comprises the variables and methods common to connections to an S7
  * PLC regardless of the type of transport.

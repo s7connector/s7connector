@@ -15,6 +15,8 @@ limitations under the License.
 */
 package com.github.s7connector.impl.nodave;
 
+import com.github.s7connector.api.DaveArea;
+
 public final class PDU {
 	/**
 	 * known function codes

@@ -17,8 +17,8 @@ package com.github.s7connector.test.test.connector;
 
 import java.io.IOException;
 
-import com.github.s7connector.impl.S7Connector;
-import com.github.s7connector.impl.nodave.DaveArea;
+import com.github.s7connector.api.DaveArea;
+import com.github.s7connector.api.S7Connector;
 
 /**
  * Echo connector for testing

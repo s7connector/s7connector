@@ -15,7 +15,7 @@ limitations under the License.
 */
 package com.github.s7connector.impl.io;
 
-import com.github.s7connector.impl.S7Connector;
+import com.github.s7connector.api.S7Connector;
 
 // TODO: Auto-generated Javadoc
 /**

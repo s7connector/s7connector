@@ -20,12 +20,12 @@ import java.lang.reflect.Array;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.s7connector.api.DaveArea;
+import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.bean.parser.BeanEntry;
 import com.github.s7connector.bean.parser.BeanParseResult;
 import com.github.s7connector.bean.parser.BeanParser;
 import com.github.s7connector.exception.S7Exception;
-import com.github.s7connector.impl.S7Connector;
-import com.github.s7connector.impl.nodave.DaveArea;
 
 /**
  * The Class S7Serializer is responsible for serializing S7 TCP Connection

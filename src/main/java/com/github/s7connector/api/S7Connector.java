@@ -13,11 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.impl;
+package com.github.s7connector.api;
 
 import java.io.Closeable;
-
-import com.github.s7connector.impl.nodave.DaveArea;
 
 public interface S7Connector extends Closeable {
 	/**

@@ -18,8 +18,8 @@ package com.github.s7connector.impl;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import com.github.s7connector.api.DaveArea;
 import com.github.s7connector.exception.S7Exception;
-import com.github.s7connector.impl.nodave.DaveArea;
 import com.github.s7connector.impl.nodave.Nodave;
 import com.github.s7connector.impl.nodave.PLCinterface;
 import com.github.s7connector.impl.nodave.TCPConnection;

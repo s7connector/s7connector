@@ -15,7 +15,8 @@ limitations under the License.
 */
 package com.github.s7connector.impl;
 
-import com.github.s7connector.impl.nodave.DaveArea;
+import com.github.s7connector.api.DaveArea;
+import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.impl.nodave.Nodave;
 import com.github.s7connector.impl.nodave.S7Connection;
 
