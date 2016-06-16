@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.test.test;
+package com.github.s7connector.test.test.live;
 
 import java.util.Date;
 
@@ -21,7 +21,7 @@ import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.api.S7Serializer;
 import com.github.s7connector.api.annotation.S7Variable;
 import com.github.s7connector.api.factory.S7ConnectorFactory;
-import com.github.s7connector.impl.serializer.S7SerializerImpl;
+import com.github.s7connector.api.factory.S7SerializerFactory;
 import com.github.s7connector.impl.utils.S7Type;
 
 public class RealPLCTest
@@ -105,7 +105,7 @@ public class RealPLCTest
 				.withHost("10.0.0.220")
 				.build();
 		
-		S7Serializer s = new S7SerializerImpl(c);
+		S7Serializer s = S7SerializerFactory.buildSerializer(c);
 		
 		DB db = new DB();
 		db.str = "Hello!";

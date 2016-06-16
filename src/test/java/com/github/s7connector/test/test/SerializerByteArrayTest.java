@@ -21,9 +21,10 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.github.s7connector.api.S7Serializer;
 import com.github.s7connector.api.annotation.Datablock;
 import com.github.s7connector.api.annotation.S7Variable;
-import com.github.s7connector.impl.serializer.S7SerializerImpl;
+import com.github.s7connector.api.factory.S7SerializerFactory;
 import com.github.s7connector.impl.utils.S7Type;
 import com.github.s7connector.test.test.connector.EchoConnector;
 
@@ -36,7 +37,7 @@ public class SerializerByteArrayTest {
 	@Ignore
 	public void test() {
 		EchoConnector c = new EchoConnector();
-		S7SerializerImpl p = new S7SerializerImpl(c);
+		S7Serializer p = S7SerializerFactory.buildSerializer(c);
 
 		/*
 		 * first level
