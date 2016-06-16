@@ -50,6 +50,8 @@ public final class S7SerializerImpl implements S7Serializer {
 	 * @return the t
 	 */
 	public static <T> T extractBytes(final Class<T> beanClass, final byte[] buffer, final int byteOffset) {
+		logger.trace("Extracting type {} from buffer with size: {} at offset {}", beanClass.getName(), buffer.length, byteOffset);
+		
 		try {
 			final T obj = beanClass.newInstance();
 
@@ -91,6 +93,8 @@ public final class S7SerializerImpl implements S7Serializer {
 	 *            the byte offset
 	 */
 	public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) {
+		logger.trace("Inerting buffer with size: {} at offset {} into bean: {}", buffer.length, byteOffset, bean);
+		
 		try {
 			final BeanParseResult result = BeanParser.parse(bean);
 
