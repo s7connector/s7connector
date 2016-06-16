@@ -139,8 +139,7 @@ public final class S7SerializerImpl implements S7Serializer {
 	public synchronized <T> T dispense(final Class<T> beanClass, final int dbNum, final int byteOffset)
 			throws S7Exception {
 		try {
-			final T obj = beanClass.newInstance(); // TODO: not needed!
-			final BeanParseResult result = BeanParser.parse(obj);
+			final BeanParseResult result = BeanParser.parse(beanClass);
 			final byte[] buffer = this.connector.read(DaveArea.DB, dbNum, result.blockSize, byteOffset);
 			return extractBytes(beanClass, buffer, 0);
 		} catch (final Exception e) {
