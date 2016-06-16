@@ -211,22 +211,4 @@ public final class S7Serializer {
 		}
 	}
 
-	/**
-	 * Update.
-	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param obj
-	 *            the obj
-	 * @param dbNum
-	 *            the db num
-	 * @param byteOffset
-	 *            the byte offset
-	 * @throws S7Exception
-	 *             the s7 exception
-	 */
-	public synchronized <T> void update(final T obj, final int dbNum, final int byteOffset) throws S7Exception {
-		// TODO
-	}
-
 }
