@@ -17,6 +17,8 @@ Features
 
 * **OSGi Support**
 
+* **PROFINET Support**
+
 * **Use directly from Maven Central**
 
 * **Apache License**
@@ -28,8 +30,14 @@ Getting Started
 ### Simple read/write example
 ```java
 	//Create connection
-	S7Connector connector = new S7TCPConnection("10.0.0.240");
-
+    S7Connector connector = 
+            S7ConnectorFactory
+            .buildTCPConnector()
+            .withHost("10.0.0.220")
+            .withRack(0) //optional
+            .withSlot(2) //optional
+            .build();
+                
 	//Read from DB100 10 bytes
 	byte[] bs = connector.read(DaveArea.DB, 100, 10, 0);
 
@@ -68,7 +76,13 @@ Contributors
 ------------
 
 Pull requests are always welcome.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
+
+License
+-------
+
+See [LICENSE.txt](LICENSE.txt) file.
 
 
 Special Thanks
