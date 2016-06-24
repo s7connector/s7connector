@@ -26,7 +26,6 @@ import com.github.s7connector.api.DaveArea;
  * @author Thomas Hergenhahn
  */
 public abstract class S7Connection {
-
 	static int tmo_normal = 150;
 	int answLen; // length of last message
 	/**

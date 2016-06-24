@@ -30,12 +30,17 @@ public enum DaveArea {
 	TIMER200(31), // IEC counters (200 family)
 	V(0x87); // IEC timers (200 family)
 
+	/** Function Code */
 	int code;
 
+	/** Constructor */
 	DaveArea(final int code) {
 		this.code = code;
 	}
 
+	/**
+	 * Returns the function code as associated
+	 */
 	public int getCode() {
 		return this.code;
 	}

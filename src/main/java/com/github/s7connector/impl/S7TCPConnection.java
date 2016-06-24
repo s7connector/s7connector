@@ -34,7 +34,7 @@ import com.github.s7connector.impl.nodave.TCPConnection;
 public final class S7TCPConnection extends S7BaseConnection {
 
 	/**
-	 * The COnnection
+	 * The Connection
 	 */
 	private TCPConnection dc;
 
