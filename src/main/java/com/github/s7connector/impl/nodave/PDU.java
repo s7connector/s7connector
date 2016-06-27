@@ -415,7 +415,7 @@ public final class PDU {
 	}
 
 	/*
-
+	
 	*/
 	int testResultData() {
 		int res = Nodave.RESULT_CANNOT_EVALUATE_PDU; // just assume the worst

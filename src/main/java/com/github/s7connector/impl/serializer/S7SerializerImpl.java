@@ -50,16 +50,14 @@ public final class S7SerializerImpl implements S7Serializer {
 	 * @return the t
 	 */
 	public static <T> T extractBytes(final Class<T> beanClass, final byte[] buffer, final int byteOffset) {
-		logger.trace("Extracting type {} from buffer with size: {} at offset {}", beanClass.getName(), buffer.length, byteOffset);
-		
+		logger.trace("Extracting type {} from buffer with size: {} at offset {}", beanClass.getName(), buffer.length,
+				byteOffset);
+
 		try {
 			final T obj = beanClass.newInstance();
-
 			final BeanParseResult result = BeanParser.parse(beanClass);
-
 			for (final BeanEntry entry : result.entries) {
 				Object value = null;
-
 				if (entry.isArray) {
 					value = Array.newInstance(entry.type, entry.arraySize);
 					for (int i = 0; i < entry.arraySize; i++) {
@@ -72,7 +70,6 @@ public final class S7SerializerImpl implements S7Serializer {
 					value = entry.serializer.extract(entry.type, buffer, entry.byteOffset + byteOffset,
 							entry.bitOffset);
 				}
-
 				entry.field.set(obj, value);
 			}
 
@@ -94,7 +91,7 @@ public final class S7SerializerImpl implements S7Serializer {
 	 */
 	public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) {
 		logger.trace("Inerting buffer with size: {} at offset {} into bean: {}", buffer.length, byteOffset, bean);
-		
+
 		try {
 			final BeanParseResult result = BeanParser.parse(bean);
 
@@ -136,9 +133,7 @@ public final class S7SerializerImpl implements S7Serializer {
 		this.connector = connector;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.s7connector.impl.serializer.S7Serializer#dispense(java.lang.Class, int, int)
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public synchronized <T> T dispense(final Class<T> beanClass, final int dbNum, final int byteOffset)
 			throws S7Exception {
@@ -151,9 +146,7 @@ public final class S7SerializerImpl implements S7Serializer {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.s7connector.impl.serializer.S7Serializer#dispense(java.lang.Class, int, int, int)
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public synchronized <T> T dispense(final Class<T> beanClass, final int dbNum, final int byteOffset,
 			final int blockSize) throws S7Exception {
@@ -166,9 +159,7 @@ public final class S7SerializerImpl implements S7Serializer {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.github.s7connector.impl.serializer.S7Serializer#store(java.lang.Object, int, int)
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public synchronized void store(final Object bean, final int dbNum, final int byteOffset) {
 		try {

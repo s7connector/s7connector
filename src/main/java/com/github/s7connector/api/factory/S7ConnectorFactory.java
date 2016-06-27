@@ -20,69 +20,70 @@ import com.github.s7connector.impl.S7TCPConnection;
 
 /**
  * S7 connector factory, currently only for TCP connections
- * 
+ *
  * @author Thomas Rudin
  *
  */
 public class S7ConnectorFactory {
 
 	/**
-	 * returns a new TCP connection builder
-	 * @return
-	 */
-	public static TCPConnectionBuilder buildTCPConnector(){
-		return new TCPConnectionBuilder();
-	}
-	
-	/**
 	 * TCP Connection builder
 	 *
 	 */
 	public static class TCPConnectionBuilder {
-		
+
 		private String host;
-		
+
 		private int rack = 0, slot = 2, port = 102;
-		
-		/**
-		 * use hostname/ip
-		 */
-		public TCPConnectionBuilder withHost(String host){
-			this.host = host;
-			return this;
-		}
-		
-		/**
-		 * use port, default is 102
-		 */
-		public TCPConnectionBuilder withPort(int port){
-			this.port = port;
-			return this;
-		}
-		
-		/**
-		 * use rack, default is 0
-		 */
-		public TCPConnectionBuilder withRack(int rack){
-			this.rack = rack;
-			return this;
-		}
-		
-		/**
-		 * use slot, default is 2
-		 */
-		public TCPConnectionBuilder withSlot(int slot){
-			this.slot = slot;
-			return this;
-		}
-		
+
 		/**
 		 * Builds a connection with given params
 		 */
-		public S7Connector build(){
-			return new S7TCPConnection(host, rack, slot, port);
+		public S7Connector build() {
+			return new S7TCPConnection(this.host, this.rack, this.slot, this.port);
 		}
-		
+
+		/**
+		 * use hostname/ip
+		 */
+		public TCPConnectionBuilder withHost(final String host) {
+			this.host = host;
+			return this;
+		}
+
+		/**
+		 * use port, default is 102
+		 */
+		public TCPConnectionBuilder withPort(final int port) {
+			this.port = port;
+			return this;
+		}
+
+		/**
+		 * use rack, default is 0
+		 */
+		public TCPConnectionBuilder withRack(final int rack) {
+			this.rack = rack;
+			return this;
+		}
+
+		/**
+		 * use slot, default is 2
+		 */
+		public TCPConnectionBuilder withSlot(final int slot) {
+			this.slot = slot;
+			return this;
+		}
+
 	}
-	
+
+	/**
+	 * returns a new TCP connection builder
+	 * 
+	 * @return
+	 */
+	public static TCPConnectionBuilder buildTCPConnector() {
+		return new TCPConnectionBuilder();
+	}
+
 }

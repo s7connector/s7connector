@@ -38,7 +38,6 @@ public final class S7Utils {
 		/*
 		 * String-Pos: 0 1 2 3 4 5 6 7 Bit: 128 64 32 16 8 4 2 1
 		 */
-
 		final boolean[] ret = new boolean[8];
 		for (int i = binString.length() - 1; i >= 0; i--) {
 			// Check for the '1'-Char and mirror-set the result

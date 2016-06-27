@@ -20,7 +20,7 @@ import com.github.s7connector.impl.utils.S7Type;
 
 /**
  * PID Control block representation
- * 
+ *
  * @author Thomas Rudin (thomas@rudin-informatik.ch)
  *
  */
