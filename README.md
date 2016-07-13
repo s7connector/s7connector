@@ -59,9 +59,9 @@ Maven directions
 
 ```xml
 <dependency>
-    <groupId>io.rudin.s7connector</groupId>
+    <groupId>com.github.s7connector</groupId>
     <artifactId>s7connector</artifactId>
-    <version>1.1</version>
+    <version>2.0</version>
 </dependency>
 ```
 
