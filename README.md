@@ -88,4 +88,4 @@ See [LICENSE.txt](LICENSE.txt) file.
 Special Thanks
 --------------
 
-This project is based on [libnodave](http://libnodave.sourceforge.net/)
+This project is based on [libnodave](https://sourceforge.net/projects/libnodave/)
