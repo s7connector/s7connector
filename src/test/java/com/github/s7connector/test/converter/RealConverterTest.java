@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.test.test.converter;
+package com.github.s7connector.test.converter;
 
 import java.util.Random;
 
@@ -21,7 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.s7connector.impl.serializer.converter.RealConverter;
-import com.github.s7connector.test.test.converter.base.ConverterBase;
+import com.github.s7connector.test.converter.base.ConverterBase;
 
 public class RealConverterTest extends ConverterBase
 {

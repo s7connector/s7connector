@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.github.s7connector.test.test;
+package com.github.s7connector.test;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -27,7 +27,7 @@ import com.github.s7connector.api.annotation.Datablock;
 import com.github.s7connector.api.annotation.S7Variable;
 import com.github.s7connector.api.factory.S7SerializerFactory;
 import com.github.s7connector.impl.utils.S7Type;
-import com.github.s7connector.test.test.connector.EchoConnector;
+import com.github.s7connector.test.connector.EchoConnector;
 
 public class SerializerTest {
 
