@@ -50,6 +50,7 @@ public class SerializerTest {
 		in.b1 = true;
 		in.b3 = true;
 		in.by1 = 0x5A;
+		in.myLong = 12345L;
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
@@ -114,6 +115,7 @@ public class SerializerTest {
 		Assert.assertEquals(in.b2, out.b2);
 		Assert.assertEquals(in.b3, out.b3);
 		Assert.assertEquals(in.by1, out.by1);
+		Assert.assertEquals(in.myLong, out.myLong);
 		Assert.assertEquals(in.simpleDate1, out.simpleDate1);
 		Assert.assertEquals(in.date1, out.date1);
 		Assert.assertEquals(in.date2, out.date2);
@@ -177,8 +179,12 @@ public class SerializerTest {
 		@S7Variable(type=S7Type.STRING, byteOffset=74, size=20)
 		public String str2;
 		
-		@S7Variable(type=S7Type.STRUCT, byteOffset=94)
+		@S7Variable(type=S7Type.DWORD, byteOffset=94)
+		public Long myLong;
+
+		@S7Variable(type=S7Type.STRUCT, byteOffset=98)
 		public SubStruct s;
+		
 	}
 	
 	@Datablock
