@@ -51,7 +51,7 @@ Getting Started
 	connector.close();
 ```
 
-More in the [Documentation](https://s7connector.github.io/s7connector/)
+More in the [Documentation](http://htmlpreview.github.io/?https://github.com/s7connector/s7connector/blob/master/index.html)
 
 
 Maven directions
