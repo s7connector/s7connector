@@ -311,6 +311,8 @@ Error message and password prompt
 
 <li>Changelog</li>
 
+<li>Compatibility</li>
+
 <li>Connecting to PLC</li>
 
 <li>Data block</li>
@@ -6536,8 +6538,8 @@ Quickstart</pre>
 <div created="20160525070545303" modified="20160525070557814" title="$:/state/add-plugin-info/$:/temp/ServerConnection/http://tiddlywiki.com/library/v5.1.11/index.html/$:/temp/RemoteAssetInfo/http://tiddlywiki.com/library/v5.1.11/index.html/$:/plugins/tiddlywiki/github-fork-ribbon">
 <pre>no</pre>
 </div>
-<div created="20160525072432366" modified="20160607072711307" title="$:/state/DevMode">
-<pre>false</pre>
+<div created="20160525072432366" modified="20170906055605032" title="$:/state/DevMode">
+<pre>true</pre>
 </div>
 <div created="20160525072959055" modified="20160525073233724" title="$:/state/plugin-info--896887961-$:/plugins/tiddlywiki/github-fork-ribbon">
 <pre>no</pre>
@@ -6563,8 +6565,8 @@ Quickstart</pre>
 <div created="20160310084652938" modified="20160526065539760" title="$:/state/tab/moresidebar-401116514">
 <pre>$:/core/ui/MoreSideBar/Missing</pre>
 </div>
-<div created="20160203194636322" modified="20160607072748675" title="$:/state/tab/sidebar--1835078512">
-<pre>$:/core/ui/SideBar/Open</pre>
+<div created="20160203194636322" modified="20170906055604056" title="$:/state/tab/sidebar--1835078512">
+<pre>Editmode</pre>
 </div>
 <div created="20160203194853319" modified="20160203194853319" title="$:/state/tabs/controlpanel/toolbars-1345989671">
 <pre>$:/core/ui/ControlPanel/Toolbars/PageControls</pre>
@@ -6590,7 +6592,7 @@ Quickstart</pre>
 <div created="20160526064849912" modified="20160530065040688" title="$:/state/toc/S7Connector-Tutorial-342844959">
 <pre>open</pre>
 </div>
-<div list="S7Connector Changelog Quickstart" title="$:/StoryList">
+<div list="S7Connector Compatibility Quickstart" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -7131,6 +7133,15 @@ public class MyDataBean {
 </div>
 <div color="#bb35ce" created="20160525071210171" modified="20160525075606633" tags="S7Connector" title="Changelog">
 <pre>{{||Templates/Spawnable}}</pre>
+</div>
+<div created="20170906055606237" modified="20170906055924319" tags="S7Connector" title="Compatibility">
+<pre>The following PLC's have been tested and are known to work:
+
+* S7-300 with PROFINET
+* S7-300 with CP-343
+* S7-1200 (bit access does not work, the whole byte or more must be read or written)
+
+See [[https://github.com/s7connector/s7connector/issues/14]] for details on testing</pre>
 </div>
 <div created="20160526064852327" modified="20160616084534189" tags="Tutorial" title="Connecting to PLC">
 <pre>Currently only TCP-Connections are supported.
