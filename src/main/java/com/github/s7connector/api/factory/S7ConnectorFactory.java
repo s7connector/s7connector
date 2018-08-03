@@ -34,13 +34,13 @@ public class S7ConnectorFactory {
 
 		private String host;
 
-		private int rack = 0, slot = 2, port = 102;
+		private int rack = 0, slot = 2, port = 102, timeout = 2000;
 
 		/**
 		 * Builds a connection with given params
 		 */
 		public S7Connector build() {
-			return new S7TCPConnection(this.host, this.rack, this.slot, this.port);
+			return new S7TCPConnection(this.host, this.rack, this.slot, this.port, this.timeout);
 		}
 
 		/**
@@ -72,6 +72,14 @@ public class S7ConnectorFactory {
 		 */
 		public TCPConnectionBuilder withSlot(final int slot) {
 			this.slot = slot;
+			return this;
+		}
+
+		/**
+		 * use timeout, default is 2000
+		 */
+		public TCPConnectionBuilder withTimeout(final int timeout) {
+			this.timeout = timeout;
 			return this;
 		}
 
