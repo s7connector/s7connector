@@ -1,11 +1,23 @@
 
-VOLUMES=-v maven-repo:/root/.m2 -v $(shell pwd)/src:/src -v $(shell pwd)/pom.xml:/pom.xml
+VOLUMES = -v maven-repo:/root/.m2 -v $(shell pwd):/data
+VOLUMES+= -v $(HOME)/.m2/settings.xml:/root/.m2/settings.xml
+VOLUMES+= -v $(HOME)/.gnupg:/root/.gnupg
+
+ENV = -e GPG_TTY=/dev/pts/0
+
+DEFAULT_CMD = docker run -it --rm $(VOLUMES) -w /data $(ENV)  maven:3.5-jdk-10
 
 build:
-	docker run -it --rm $(VOLUMES) maven:3.5-jdk-10 mvn clean install
+	$(DEFAULT_CMD) mvn clean install
+
+clean:
+	$(DEFAULT_CMD) mvn clean
+
+deploy:
+	$(DEFAULT_CMD) mvn clean deploy
 
 release:
-	docker run -it --rm $(VOLUMES) maven:3.5-jdk-10 mvn release:prepare release:perform
+	$(DEFAULT_CMD) mvn nexus-staging:release
 
 wiki:
 	echo Starting server @ http://127.0.0.1:8088/index.html
