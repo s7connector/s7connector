@@ -17,7 +17,7 @@ deploy:
 	$(DEFAULT_CMD) mvn clean deploy
 
 release:
-	$(DEFAULT_CMD) mvn nexus-staging:release
+	$(DEFAULT_CMD) mvn release:prepare release:perform
 
 wiki:
 	echo Starting server @ http://127.0.0.1:8088/index.html
