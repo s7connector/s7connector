@@ -2,6 +2,8 @@
 VOLUMES = -v maven-repo:/root/.m2 -v $(shell pwd):/data
 VOLUMES+= -v $(HOME)/.m2/settings.xml:/root/.m2/settings.xml
 VOLUMES+= -v $(HOME)/.gnupg:/root/.gnupg
+VOLUMES+= -v $(HOME)/.gitconfig:/root/.gitconfig
+VOLUMES+= -v $(HOME)/.ssh:/root/.ssh
 
 ENV = -e GPG_TTY=/dev/pts/0
 
