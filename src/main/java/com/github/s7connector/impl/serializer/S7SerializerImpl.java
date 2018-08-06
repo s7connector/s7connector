@@ -70,6 +70,18 @@ public final class S7SerializerImpl implements S7Serializer {
 					value = entry.serializer.extract(entry.type, buffer, entry.byteOffset + byteOffset,
 							entry.bitOffset);
 				}
+
+				if (entry.field.getType() == byte[].class){
+					//Special case issue #45
+					Byte[] oldValue = (Byte[])value;
+
+					value = new byte[oldValue.length];
+
+					for (int i=0; i<oldValue.length; i++){
+						((byte[])value)[i] = oldValue[i];
+					}
+				}
+
 				entry.field.set(obj, value);
 			}
 

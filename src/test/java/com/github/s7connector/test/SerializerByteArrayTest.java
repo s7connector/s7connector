@@ -34,7 +34,7 @@ public class SerializerByteArrayTest {
 
 	
 	@Test
-	@Ignore //Note: Dispenser does not work currently with plain byte[], use Byte[] instead
+	//@Ignore //Note: Dispenser does not work currently with plain byte[], use Byte[] instead
 	public void test() {
 		EchoConnector c = new EchoConnector();
 		S7Serializer p = S7SerializerFactory.buildSerializer(c);
