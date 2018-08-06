@@ -105,6 +105,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
 
