@@ -59,6 +59,11 @@ public final class S7TCPConnection extends S7BaseConnection {
 	private final int rack, slot;
 
 	/**
+	 * Timeout number
+	 */
+	private final int timeout;
+
+	/**
 	 * The Socket
 	 */
 	private Socket socket;
@@ -67,13 +72,14 @@ public final class S7TCPConnection extends S7BaseConnection {
 	 * Creates a new Instance to the given host, rack, slot and port
 	 *
 	 * @param host
-	 * @throws EthernetControlException
+	 * @throws S7Exception
 	 */
-	public S7TCPConnection(final String host, final int rack, final int slot, final int port) throws S7Exception {
+	public S7TCPConnection(final String host, final int rack, final int slot, final int port, final int timeout) throws S7Exception {
 		this.host = host;
 		this.rack = rack;
 		this.slot = slot;
 		this.port = port;
+		this.timeout = timeout;
 		this.setupSocket();
 	}
 
@@ -99,7 +105,7 @@ public final class S7TCPConnection extends S7BaseConnection {
 		try {
 			this.socket = new Socket();
 			this.socket.setSoTimeout(2000);
-			this.socket.connect(new InetSocketAddress(this.host, this.port));
+			this.socket.connect(new InetSocketAddress(this.host, this.port), this.timeout);
 
 			this.di = new PLCinterface(this.socket.getOutputStream(), this.socket.getInputStream(), "IF1",
 					DaveArea.LOCAL.getCode(), // TODO Local MPI-Address?
