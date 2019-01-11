@@ -27,15 +27,9 @@ public final class StringConverter implements S7Serializable {
 	/** {@inheritDoc} */
 	@Override
 	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
-		final int len = buffer[byteOffset + OFFSET_CURRENT_LENGTH];
+		final int len = buffer[byteOffset + OFFSET_CURRENT_LENGTH] & 0xFF;
 
-		final byte[] bytes = new byte[len];
-
-		for (int i = 0; i < len; i++) {
-			bytes[i] = buffer[byteOffset + OFFSET_START + i];
-		}
-
-		return targetClass.cast(new String(bytes));
+		return targetClass.cast(new String(buffer, byteOffset + OFFSET_START, len));
 	}
 
 	/** {@inheritDoc} */
@@ -74,9 +68,7 @@ public final class StringConverter implements S7Serializable {
 		buffer[byteOffset + OFFSET_CURRENT_LENGTH] = (byte) len;
 
 		final byte[] strBytes = value.getBytes();
-		for (int i = 0; i < len; i++) {
-			buffer[byteOffset + OFFSET_START + i] = (byte) (strBytes[i] & 0xFF);
-		}
+		System.arraycopy(strBytes, 0, buffer, byteOffset+OFFSET_START, len);
 	}
 
 }

@@ -20,6 +20,8 @@ import org.junit.Test;
 
 import com.github.s7connector.impl.serializer.converter.StringConverter;
 
+import java.util.Arrays;
+
 public class StringConverterTest
 {
 	
@@ -56,9 +58,31 @@ public class StringConverterTest
 	public void extract2()
 	{
 		StringConverter c = new StringConverter();
-		byte[] buffer = new byte[]{ 0, 8, 5, 'H', 'e', 'l', 'l', 'o', 0, 0, 0};
+		byte[] buffer = new byte[]{ 0, 0x08, 0x05, 'H', 'e', 'l', 'l', 'o', 0, 0, 0};
 		String str = c.extract(String.class, buffer, 1, 0);
 		Assert.assertEquals("Hello", str);
+	}
+
+	/**
+	 * Test case for #48 (Serialization of long String fails)
+	 */
+	@Test
+	public void extractLongString() {
+		String inStr = "myVeryLongStringWithLotsOfWordsAndNumb3ersAndStuff___()xyzäöü123456789" +
+				"myVeryLongStringWithLotsOfWordsAndNumb3ersAndStuff_2_()xyzäöü123456789";
+
+		Assert.assertTrue(inStr.length() > 127);
+		Assert.assertTrue(inStr.length() < 240);
+		byte[] inBytes = inStr.getBytes();
+
+		StringConverter c = new StringConverter();
+		byte[] buffer = new byte[256];
+		buffer[0] = (byte)240;
+		buffer[1] = (byte)inBytes.length;
+		System.arraycopy(inBytes, 0, buffer, 2, inBytes.length);
+
+		String str = c.extract(String.class, buffer, 0, 0);
+		Assert.assertEquals(inStr, str);
 	}
 
 }
