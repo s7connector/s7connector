@@ -60,4 +60,14 @@ public class BitConverterTest
 		boolean b = c.extract(Boolean.class, buffer, 0, 0);
 		Assert.assertTrue(b);
 	}
+
+	//Test false boolean values
+	//thx to @mfriedemann (https://github.com/mfriedemann)
+	@Test
+	public void testInsertFalseBits() {
+		byte[] buffer = new byte[] { 0b0101_0101 };
+		int expected =               0b0101_0100;
+		new BitConverter().insert(false, buffer, 0, 0, 1);
+		Assert.assertEquals(expected, (int) buffer[0]);
+	}
 }

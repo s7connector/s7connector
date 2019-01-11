@@ -54,10 +54,11 @@ public final class BitConverter implements S7Serializable {
 			final int size) {
 		final Boolean value = (Boolean) javaType;
 
+		//thx to @mfriedemann (https://github.com/mfriedemann)
 		if (value) {
-			byte bufValue = buffer[byteOffset];
-			bufValue |= (0x01 << bitOffset);
-			buffer[byteOffset] = bufValue;
+			buffer[byteOffset] |= (0x01 << bitOffset);
+		} else {
+			buffer[byteOffset] &= ~(0x01 << bitOffset);
 		}
 	}
 
