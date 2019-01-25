@@ -81,7 +81,12 @@ public enum S7Type {
 	/**
 	 * A Word-type (same as int-type)
 	 */
-	WORD(IntegerConverter.class, 2, 0);
+	WORD(IntegerConverter.class, 2, 0),
+
+	/**
+	 * A DINT-type (same as DWORD-type)
+	 */
+	DINT(LongConverter.class, 2, 0);
 
 	private int byteSize, bitSize;
 
