@@ -19,6 +19,8 @@ import java.io.IOException;
 
 import com.github.s7connector.api.DaveArea;
 import com.github.s7connector.api.S7Connector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Echo connector for testing
@@ -30,8 +32,12 @@ import com.github.s7connector.api.S7Connector;
  */
 public class EchoConnector implements S7Connector {
 
+	private static final Logger logger = LoggerFactory.getLogger(EchoConnector.class);
+
 	@Override
 	public byte[] read(DaveArea area, int areaNumber, int bytes, int offset) {
+		logger.debug("Reading area={} areaNumber={}, bytes={} offset={}",
+				area, areaNumber, bytes, offset);
 		return buffer;
 	}
 
@@ -40,6 +46,9 @@ public class EchoConnector implements S7Connector {
 
 	@Override
 	public void write(DaveArea area, int areaNumber, int offset, byte[] buffer) {
+		logger.debug("Writing area={} areaNumber={}, offset={} buffer.length={}",
+				area, areaNumber, offset, buffer.length);
+
 		this.buffer = buffer;
 
 		System.out.println("Size: " + buffer.length);
