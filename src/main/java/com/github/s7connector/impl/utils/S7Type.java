@@ -86,7 +86,7 @@ public enum S7Type {
 	/**
 	 * A DINT-type (same as DWORD-type)
 	 */
-	DINT(LongConverter.class, 2, 0);
+	DINT(LongConverter.class, 4, 0);
 
 	private int byteSize, bitSize;
 
