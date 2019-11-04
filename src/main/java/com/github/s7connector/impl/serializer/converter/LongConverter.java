@@ -40,7 +40,7 @@ public final class LongConverter implements S7Serializable {
 	/** {@inheritDoc} */
 	@Override
 	public S7Type getS7Type() {
-		return S7Type.WORD;
+		return S7Type.DWORD;
 	}
 
 	/** {@inheritDoc} */
