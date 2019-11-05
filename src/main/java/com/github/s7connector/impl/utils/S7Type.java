@@ -22,6 +22,7 @@ import com.github.s7connector.impl.serializer.converter.DateAndTimeConverter;
 import com.github.s7connector.impl.serializer.converter.DateConverter;
 import com.github.s7connector.impl.serializer.converter.IntegerConverter;
 import com.github.s7connector.impl.serializer.converter.LongConverter;
+import com.github.s7connector.impl.serializer.converter.ShortConverter;
 import com.github.s7connector.impl.serializer.converter.RealConverter;
 import com.github.s7connector.impl.serializer.converter.StringConverter;
 import com.github.s7connector.impl.serializer.converter.StructConverter;
@@ -86,7 +87,12 @@ public enum S7Type {
 	/**
 	 * A DINT-type (same as DWORD-type)
 	 */
-	DINT(LongConverter.class, 2, 0);
+	DINT(LongConverter.class, 4, 0),
+
+	/**
+	 * A INT-type
+	 */
+	INT(ShortConverter.class, 2, 0);
 
 	private int byteSize, bitSize;
 
