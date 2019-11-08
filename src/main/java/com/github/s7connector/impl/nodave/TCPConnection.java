@@ -57,24 +57,24 @@ public final class TCPConnection extends S7Connection {
      * @return the int
      */
     public int connectPLC() {
-        final byte[] b4 = {
-                (byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
-                (byte) 0xC1, (byte) 0x02, (byte) 0x01, (byte) 0x00, (byte) 0xC2, (byte) 0x02, (byte) 0x01, (byte) 0x02,
-                (byte) 0xC0, (byte) 0x01, (byte) 0x09
-        };
-        final byte[] b243 = {
-                (byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
-                (byte) 0xC1, (byte) 0x02, (byte) 0x4D, (byte) 0x57, (byte) 0xC2, (byte) 0x02, (byte) 0x4D, (byte) 0x57,
-                (byte) 0xC0, (byte) 0x01, (byte) 0x09
-        };
         int packetLength;
         if (iface.protocol == Nodave.PROTOCOL_ISOTCP243) {
+        	final byte[] b243 = {
+        			(byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+        			(byte) 0xC1, (byte) 0x02, (byte) 0x4D, (byte) 0x57, (byte) 0xC2, (byte) 0x02, (byte) 0x4D, (byte) 0x57,
+        			(byte) 0xC0, (byte) 0x01, (byte) 0x09
+        	};
             System.arraycopy(b243, 0, this.msgOut, 4, b243.length);
             packetLength = b243.length;
         } else {
+        	final byte[] b4 = {
+        			(byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+        			(byte) 0xC1, (byte) 0x02, (byte) 0x01, (byte) 0x00, (byte) 0xC2, (byte) 0x02, (byte) 0x01, (byte) 0x02,
+        			(byte) 0xC0, (byte) 0x01, (byte) 0x09
+        	};
+        	System.arraycopy(b4, 0, this.msgOut, 4, b4.length);
             this.msgOut[17] = (byte) (this.rack + 1);
             this.msgOut[18] = (byte) this.slot;
-            System.arraycopy(b4, 0, this.msgOut, 4, b4.length);
             packetLength = b4.length;
         }
         this.sendISOPacket(packetLength);
