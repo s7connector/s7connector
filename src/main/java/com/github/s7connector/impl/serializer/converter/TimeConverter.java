@@ -15,7 +15,7 @@ limitations under the License.
 */
 package com.github.s7connector.impl.serializer.converter;
 
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 
 public final class TimeConverter extends ByteConverter {
 

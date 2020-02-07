@@ -18,7 +18,7 @@ package com.github.s7connector.impl.serializer.converter;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 
 public final class DateAndTimeConverter extends ByteConverter {
 

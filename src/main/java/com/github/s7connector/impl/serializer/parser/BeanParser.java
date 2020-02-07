@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.s7connector.api.S7Serializable;
 import com.github.s7connector.api.annotation.S7Variable;
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 
 public final class BeanParser {
 

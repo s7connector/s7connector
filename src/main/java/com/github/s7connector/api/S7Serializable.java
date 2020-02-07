@@ -15,7 +15,7 @@ limitations under the License.
 */
 package com.github.s7connector.api;
 
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 
 /**
  * The Interface S7Serializable API
