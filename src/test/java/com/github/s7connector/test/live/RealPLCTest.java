@@ -22,7 +22,7 @@ import com.github.s7connector.api.S7Serializer;
 import com.github.s7connector.api.annotation.S7Variable;
 import com.github.s7connector.api.factory.S7ConnectorFactory;
 import com.github.s7connector.api.factory.S7SerializerFactory;
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 
 public class RealPLCTest
 {

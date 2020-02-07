@@ -19,7 +19,7 @@ import com.github.s7connector.api.S7Serializer;
 import com.github.s7connector.api.annotation.Datablock;
 import com.github.s7connector.api.annotation.S7Variable;
 import com.github.s7connector.api.factory.S7SerializerFactory;
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 import com.github.s7connector.test.connector.EchoConnector;
 import org.junit.Assert;
 import org.junit.Test;

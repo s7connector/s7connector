@@ -17,7 +17,7 @@ package com.github.s7connector.impl.serializer.converter;
 
 import com.github.s7connector.api.S7Serializable;
 import com.github.s7connector.impl.serializer.S7SerializerImpl;
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 
 public final class StructConverter implements S7Serializable {
 

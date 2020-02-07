@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.s7connector.impl.utils.S7Type;
+import com.github.s7connector.api.S7Type;
 
 /**
  * Defines an Offset in a DB
