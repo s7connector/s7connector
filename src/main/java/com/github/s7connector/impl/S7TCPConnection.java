@@ -112,7 +112,7 @@ public final class S7TCPConnection extends S7BaseConnection {
     private void setupSocket() {
         try {
             this.socket = new Socket();
-            this.socket.setSoTimeout(2000);
+            this.socket.setSoTimeout(this.timeout);
             this.socket.connect(new InetSocketAddress(this.host, this.port), this.timeout);
 
             //select the plc interface protocol by the plcsType
