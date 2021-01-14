@@ -54,6 +54,15 @@ public final class S7TCPConnection extends S7BaseConnection {
     private final int port;
 
     /**
+     * Connection type:
+     * 1 = PG
+     * 2 = OP
+     * 3 = S7 Basic
+     * 4-10 = Generic
+     */
+    private final int type;
+
+    /**
      * Rack and slot number
      */
     private final int rack, slot;
@@ -79,8 +88,9 @@ public final class S7TCPConnection extends S7BaseConnection {
      * @param host
      * @throws S7Exception
      */
-    public S7TCPConnection(final String host, final int rack, final int slot, final int port, final int timeout, final SiemensPLCS plcType) throws S7Exception {
+    public S7TCPConnection(final String host, final int type, final int rack, final int slot, final int port, final int timeout, final SiemensPLCS plcType) throws S7Exception {
         this.host = host;
+        this.type = type;
         this.rack = rack;
         this.slot = slot;
         this.port = port;
@@ -135,7 +145,7 @@ public final class S7TCPConnection extends S7BaseConnection {
                     DaveArea.LOCAL.getCode(), // TODO Local MPI-Address?
                     protocol);
 
-            this.dc = new TCPConnection(this.di, this.rack, this.slot);
+            this.dc = new TCPConnection(this.di, this.type, this.rack, this.slot);
             final int res = this.dc.connectPLC();
             checkResult(res);
 
