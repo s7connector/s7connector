@@ -34,6 +34,7 @@ Getting Started
             S7ConnectorFactory
             .buildTCPConnector()
             .withHost("10.0.0.220")
+            .withType(1) //optional
             .withRack(0) //optional
             .withSlot(2) //optional
             .build();

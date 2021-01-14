@@ -35,7 +35,7 @@ public class S7ConnectorFactory {
 
         private SiemensPLCS plcsType;
 
-        private int rack = 0, slot = 2, port = 102, timeout = 2000;
+        private int type = 1, rack = 0, slot = 2, port = 102, timeout = 2000;
 
         TCPConnectionBuilder(SiemensPLCS type) {
             this.plcsType = type;
@@ -45,7 +45,7 @@ public class S7ConnectorFactory {
          * Builds a connection with given params
          */
         public S7Connector build() {
-            return new S7TCPConnection(this.host, this.rack, this.slot, this.port, this.timeout, this.plcsType);
+            return new S7TCPConnection(this.host, this.type, this.rack, this.slot, this.port, this.timeout, this.plcsType);
         }
 
         /**
@@ -61,6 +61,14 @@ public class S7ConnectorFactory {
          */
         public TCPConnectionBuilder withPort(final int port) {
             this.port = port;
+            return this;
+        }
+
+        /**
+         * use rack, default is 1
+         */
+        public TCPConnectionBuilder withType(final int type) {
+            this.type = type;
             return this;
         }
 

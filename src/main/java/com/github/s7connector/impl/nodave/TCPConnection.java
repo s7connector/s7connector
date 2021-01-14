@@ -25,6 +25,11 @@ package com.github.s7connector.impl.nodave;
 public final class TCPConnection extends S7Connection {
 
     /**
+     * The connection type.
+     */
+    int type;
+
+    /**
      * The rack.
      */
     int rack;
@@ -41,8 +46,9 @@ public final class TCPConnection extends S7Connection {
      * @param rack the rack
      * @param slot the slot
      */
-    public TCPConnection(final PLCinterface ifa, final int rack, final int slot) {
+    public TCPConnection(final PLCinterface ifa, final int type, final int rack, final int slot) {
         super(ifa);
+        this.type = type;
         this.rack = rack;
         this.slot = slot;
         this.PDUstartIn = 7;
@@ -73,8 +79,8 @@ public final class TCPConnection extends S7Connection {
         			(byte) 0xC0, (byte) 0x01, (byte) 0x09
         	};
         	System.arraycopy(b4, 0, this.msgOut, 4, b4.length);
-            this.msgOut[17] = (byte) (this.rack + 1);
-            this.msgOut[18] = (byte) this.slot;
+            this.msgOut[17] = (byte) this.type;
+            this.msgOut[18] = (byte) ((16 * (this.rack *2) ) +this.slot);
             packetLength = b4.length;
         }
         this.sendISOPacket(packetLength);
