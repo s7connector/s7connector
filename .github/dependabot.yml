@@ -1,0 +1,13 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  reviewers:
+  - thomasrudin
+  ignore:
+  - dependency-name: org.apache.felix:maven-bundle-plugin
+    versions:
+    - 5.1.1
