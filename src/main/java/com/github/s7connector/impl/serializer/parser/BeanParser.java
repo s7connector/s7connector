@@ -79,12 +79,20 @@ public final class BeanParser {
                     res.blockSize = offset;
                 }
 
+                final BeanParseResult subTypeBeanParseResult;
                 if (dataAnnotation.type() == S7Type.STRUCT) {
                     // recurse
                     logger.trace("Recursing...");
-                    final BeanParseResult subResult = parse(field.getType());
-                    res.blockSize += subResult.blockSize;
+                    if (field.getType().isArray()) {
+                        subTypeBeanParseResult = parse(field.getType().getComponentType());
+                        res.blockSize += subTypeBeanParseResult.blockSize * dataAnnotation.arraySize();
+                    } else {
+                        subTypeBeanParseResult = parse(field.getType());
+                        res.blockSize += subTypeBeanParseResult.blockSize;
+                    }
                     logger.trace("\tNew blocksize: {}", res.blockSize);
+                } else {
+                    subTypeBeanParseResult = null;
                 }
 
                 logger.trace("\tNew blocksize (+offset): {}", res.blockSize);
@@ -98,7 +106,10 @@ public final class BeanParser {
                 entry.bitOffset = dataAnnotation.bitOffset();
                 entry.field = field;
                 entry.type = getWrapperForPrimitiveType(field.getType());
-                entry.size = dataAnnotation.size();
+                // safeguard if annotation provided explicit value for size
+                entry.size = (null != subTypeBeanParseResult && 0 == dataAnnotation.type().getByteSize())
+                        && 0 == dataAnnotation.size()
+                        ? subTypeBeanParseResult.blockSize : dataAnnotation.size();
                 entry.s7type = dataAnnotation.type();
                 entry.isArray = field.getType().isArray();
                 entry.arraySize = dataAnnotation.arraySize();

@@ -56,10 +56,17 @@ public final class S7SerializerImpl implements S7Serializer {
             for (final BeanEntry entry : result.entries) {
                 Object value = null;
                 if (entry.isArray) {
+                    final int entryByteSize =
+                            0 == entry.s7type.getByteSize() && 0 == entry.s7type.getBitSize() ? entry.size :
+                                    entry.s7type.getByteSize();
                     value = Array.newInstance(entry.type, entry.arraySize);
+                    if (buffer.length < entryByteSize * entry.arraySize) {
+                        throw new IllegalStateException("not enough data for " + entry.arraySize +
+                                " elements of " + entryByteSize + " byte size to read from buffer with " + buffer.length + " bytes");
+                    }
                     for (int i = 0; i < entry.arraySize; i++) {
                         final Object component = entry.serializer.extract(entry.type, buffer,
-                                entry.byteOffset + byteOffset + (i * entry.s7type.getByteSize()),
+                                entry.byteOffset + byteOffset + (i * entryByteSize),
                                 entry.bitOffset + (i * entry.s7type.getBitSize()));
                         Array.set(value, i, component);
                     }
@@ -96,7 +103,7 @@ public final class S7SerializerImpl implements S7Serializer {
      * @param byteOffset the byte offset
      */
     public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) {
-        logger.trace("Inerting buffer with size: {} at offset {} into bean: {}", buffer.length, byteOffset, bean);
+        logger.trace("Inserting buffer with size: {} at offset {} into bean: {}", buffer.length, byteOffset, bean);
 
         try {
             final BeanParseResult result = BeanParser.parse(bean);
@@ -106,12 +113,16 @@ public final class S7SerializerImpl implements S7Serializer {
 
                 if (fieldValue != null) {
                     if (entry.isArray) {
+                        //  getByteSize() is 0 for STRUCT, thus BeanParser stores blockSize of sub-STRUCT in size-attribute of annotation
+                        final int entryByteSize =
+                                0 == entry.s7type.getByteSize() && 0 == entry.s7type.getBitSize() ? entry.size :
+                                        entry.s7type.getByteSize();
                         for (int i = 0; i < entry.arraySize; i++) {
                             final Object arrayItem = Array.get(fieldValue, i);
-
                             if (arrayItem != null) {
+                                logger.trace("writing {} to #{}", arrayItem, i);
                                 entry.serializer.insert(arrayItem, buffer,
-                                        entry.byteOffset + byteOffset + (i * entry.s7type.getByteSize()),
+                                        entry.byteOffset + byteOffset + (i * entryByteSize),
                                         entry.bitOffset + (i * entry.s7type.getBitSize()), entry.size);
                             }
                         }
