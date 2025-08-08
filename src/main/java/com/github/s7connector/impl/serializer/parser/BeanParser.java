@@ -15,141 +15,143 @@ limitations under the License.
 */
 package com.github.s7connector.impl.serializer.parser;
 
-import java.lang.reflect.Field;
-
+import com.github.s7connector.api.S7Serializable;
+import com.github.s7connector.api.S7Type;
+import com.github.s7connector.api.annotation.S7Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.s7connector.api.S7Serializable;
-import com.github.s7connector.api.annotation.S7Variable;
-import com.github.s7connector.api.S7Type;
+import java.lang.reflect.Field;
 
 public final class BeanParser {
+    private BeanParser() {
+    }
 
-	/**
-	 * Local Logger
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(BeanParser.class);
+    /**
+     * Local Logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(BeanParser.class);
 
-	/**
-	 * Returns the wrapper for the primitive type
-	 * 
-	 * @param primitiveType
-	 * @return
-	 */
-	private static Class<?> getWrapperForPrimitiveType(final Class<?> primitiveType) {
-		if (primitiveType == boolean.class) {
-			return Boolean.class;
-		} else if (primitiveType == byte.class) {
-			return Byte.class;
-		} else if (primitiveType == int.class) {
-			return Integer.class;
-		} else if (primitiveType == float.class) {
-			return Float.class;
-		} else if (primitiveType == double.class) {
-			return Double.class;
-		} else if (primitiveType == long.class) {
-			return Long.class;
-		} else {
-			// Fallback
-			return primitiveType;
-		}
-	}
+    /**
+     * Returns the wrapper for the primitive type
+     */
+    private static Class<?> getWrapperForPrimitiveType(final Class<?> primitiveType) {
+        if (primitiveType == boolean.class) {
+            return Boolean.class;
+        } else if (primitiveType == byte.class) {
+            return Byte.class;
+        } else if (primitiveType == int.class) {
+            return Integer.class;
+        } else if (primitiveType == float.class) {
+            return Float.class;
+        } else if (primitiveType == double.class) {
+            return Double.class;
+        } else if (primitiveType == long.class) {
+            return Long.class;
+        } else {
+            // Fallback
+            return primitiveType;
+        }
+    }
 
-	/**
-	 * Parses a Class
-	 * 
-	 * @param jclass
-	 * @return
-	 * @throws Exception
-	 */
-	public static BeanParseResult parse(final Class<?> jclass) throws Exception {
-		final BeanParseResult res = new BeanParseResult();
-		logger.trace("Parsing: " + jclass.getName());
+    /**
+     * Parses a Class
+     */
+    public static BeanParseResult parse(final Class<?> jclass) throws Exception {
+        final BeanParseResult res = new BeanParseResult();
+        logger.trace("Parsing: {}", jclass.getName());
 
-		for (final Field field : jclass.getFields()) {
-			final S7Variable dataAnnotation = field.getAnnotation(S7Variable.class);
+        for (final Field field : jclass.getFields()) {
+            final S7Variable dataAnnotation = field.getAnnotation(S7Variable.class);
 
-			if (dataAnnotation != null) {
-				logger.trace("Parsing field: " + field.getName());
-				logger.trace("		type: " + dataAnnotation.type());
-				logger.trace("		byteOffset: " + dataAnnotation.byteOffset());
-				logger.trace("		bitOffset: " + dataAnnotation.bitOffset());
-				logger.trace("		size: " + dataAnnotation.size());
-				logger.trace("		arraySize: " + dataAnnotation.arraySize());
+            if (dataAnnotation != null) {
+                logger.trace("Parsing field: {}", field.getName());
+                logger.trace("\t\ttype: {}", dataAnnotation.type());
+                logger.trace("\t\tbyteOffset: {}", dataAnnotation.byteOffset());
+                logger.trace("\t\tbitOffset: {}", dataAnnotation.bitOffset());
+                logger.trace("\t\tsize: {}", dataAnnotation.size());
+                logger.trace("\t\tarraySize: {}", dataAnnotation.arraySize());
 
-				final int offset = dataAnnotation.byteOffset();
+                final int offset = dataAnnotation.byteOffset();
 
-				// update max offset
-				if (offset > res.blockSize) {
-					res.blockSize = offset;
-				}
+                // update max offset
+                if (offset > res.blockSize) {
+                    res.blockSize = offset;
+                }
 
-				if (dataAnnotation.type() == S7Type.STRUCT) {
-					// recurse
-					logger.trace("Recursing...");
-					final BeanParseResult subResult = parse(field.getType());
-					res.blockSize += subResult.blockSize;
-					logger.trace("	New blocksize: " + res.blockSize);
-				}
+                final BeanParseResult subTypeBeanParseResult;
+                if (dataAnnotation.type() == S7Type.STRUCT) {
+                    // recurse
+                    logger.trace("Recursing...");
+                    if (field.getType().isArray()) {
+                        subTypeBeanParseResult = parse(field.getType().getComponentType());
+                        res.blockSize += subTypeBeanParseResult.blockSize * dataAnnotation.arraySize();
+                    } else {
+                        subTypeBeanParseResult = parse(field.getType());
+                        res.blockSize += subTypeBeanParseResult.blockSize;
+                    }
+                    logger.trace("\tNew blocksize: {}", res.blockSize);
+                } else {
+                    subTypeBeanParseResult = null;
+                }
 
-				logger.trace("	New blocksize (+offset): " + res.blockSize);
+                logger.trace("\tNew blocksize (+offset): {}", res.blockSize);
 
-				// Add dynamic size
-				res.blockSize += dataAnnotation.size();
+                // Add dynamic size
+                res.blockSize += dataAnnotation.size();
 
-				// Plain element
-				final BeanEntry entry = new BeanEntry();
-				entry.byteOffset = dataAnnotation.byteOffset();
-				entry.bitOffset = dataAnnotation.bitOffset();
-				entry.field = field;
-				entry.type = getWrapperForPrimitiveType(field.getType());
-				entry.size = dataAnnotation.size();
-				entry.s7type = dataAnnotation.type();
-				entry.isArray = field.getType().isArray();
-				entry.arraySize = dataAnnotation.arraySize();
+                // Plain element
+                final BeanEntry entry = new BeanEntry();
+                entry.byteOffset = dataAnnotation.byteOffset();
+                entry.bitOffset = dataAnnotation.bitOffset();
+                entry.field = field;
+                entry.type = getWrapperForPrimitiveType(field.getType());
+                // safeguard if annotation provided explicit value for size
+                entry.size = (null != subTypeBeanParseResult && 0 == dataAnnotation.type().getByteSize())
+                        && 0 == dataAnnotation.size()
+                        ? subTypeBeanParseResult.blockSize : dataAnnotation.size();
+                entry.s7type = dataAnnotation.type();
+                entry.isArray = field.getType().isArray();
+                entry.arraySize = dataAnnotation.arraySize();
 
-				if (entry.isArray) {
-					entry.type = getWrapperForPrimitiveType(entry.type.getComponentType());
-				}
+                if (entry.isArray) {
+                    entry.type = getWrapperForPrimitiveType(entry.type.getComponentType());
+                }
 
-				// Create new serializer
-				final S7Serializable s = entry.s7type.getSerializer().newInstance();
-				entry.serializer = s;
+                // Create new serializer
+                final S7Serializable s = entry.s7type.getSerializer().newInstance();
+                entry.serializer = s;
 
-				res.blockSize += (s.getSizeInBytes() * dataAnnotation.arraySize());
-				logger.trace("	New blocksize (+array): " + res.blockSize);
+                res.blockSize += (s.getSizeInBytes() * dataAnnotation.arraySize());
+                logger.trace("\tNew blocksize (+array): {}", res.blockSize);
 
-				if (s.getSizeInBits() > 0) {
-					boolean offsetOfBitAlreadyKnown = false;
-					for (final BeanEntry parsedEntry : res.entries) {
-						if (parsedEntry.byteOffset == entry.byteOffset) {
-							offsetOfBitAlreadyKnown = true;
-						}
-					}
-					if (!offsetOfBitAlreadyKnown) {
-						res.blockSize++;
-					}
-				}
+                if (s.getSizeInBits() > 0) {
+                    boolean offsetOfBitAlreadyKnown = false;
+                    for (final BeanEntry parsedEntry : res.entries) {
+                        if (parsedEntry.byteOffset == entry.byteOffset) {
+                            offsetOfBitAlreadyKnown = true;
+                            break;
+                        }
+                    }
+                    if (!offsetOfBitAlreadyKnown) {
+                        res.blockSize++;
+                    }
+                }
 
-				res.entries.add(entry);
-			}
-		}
+                res.entries.add(entry);
+            }
+        }
 
-		logger.trace("Parsing done, overall size: " + res.blockSize);
+        logger.trace("Parsing done, overall size: {}", res.blockSize);
 
-		return res;
-	}
+        return res;
+    }
 
-	/**
-	 * Parses an Object
-	 * 
-	 * @param obj
-	 * @return
-	 * @throws Exception
-	 */
-	public static BeanParseResult parse(final Object obj) throws Exception {
-		return parse(obj.getClass());
-	}
+    /**
+     * Parses an Object
+     */
+    public static BeanParseResult parse(final Object obj) throws Exception {
+        return parse(obj.getClass());
+    }
 
 }
