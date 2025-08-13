@@ -66,18 +66,11 @@ public final class DateAndTimeConverter extends ByteConverter {
         c.set(Calendar.MINUTE, this.getFromPLC(buffer, OFFSET_MINUTE + byteOffset));
         c.set(Calendar.SECOND, this.getFromPLC(buffer, OFFSET_SECOND + byteOffset));
 
-        byte upperMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_100_10 + byteOffset, bitOffset);
-        byte lowerMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_1_AND_DOW + byteOffset, bitOffset);
-
-        int ms100 = (upperMillis >> 4);
-        int ms10 = (upperMillis & 0x0F);
-        int ms1 = (lowerMillis >> 4);
-
-        int millis = ms1 + (10 * ms10) + (100 * ms100);
-        c.set(Calendar.MILLISECOND, millis);
-
-        int dow = (lowerMillis & 0x0F);
-        c.set(Calendar.DAY_OF_WEEK, dow);
+        final byte upperMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_100_10 + byteOffset, bitOffset);
+        final byte lowerMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_1_AND_DOW + byteOffset, bitOffset);
+        c.set(Calendar.MILLISECOND, (100 * (upperMillis >> 4)) + (10 * (upperMillis & 0x0F)) + (lowerMillis >> 4));
+        // dayOfWeek is ignored by Calendar.selectField()'s implementation thus we save the time to set it.
+        // Would have been: c.set(Calendar.DAY_OF_WEEK, (lowerMillis & 0x0F))
 
         return targetClass.cast(c.getTime());
     }
@@ -85,17 +78,13 @@ public final class DateAndTimeConverter extends ByteConverter {
     /**
      * Dec -> Hex 10 = 0a 16 = 0f 17 = 10
      *
-     * @param buffer
-     * @param offset
-     * @return
+     * @param buffer buffer read from PLC
+     * @param offset offset in buffer
+     * @return value of BCD encoded number
      */
-    public byte getFromPLC(final byte[] buffer, final int offset) {
-        try {
-            final byte ret = super.extract(Byte.class, buffer, offset, 0);
-            return (byte) Integer.parseInt(Integer.toHexString(ret & 0xFF));
-        } catch (final NumberFormatException e) {
-            return 0;
-        }
+    byte getFromPLC(final byte[] buffer, final int offset) {
+        final byte ret = super.extract(Byte.class, buffer, offset, 0);
+        return (byte) (((byte) ((ret >> 4) & 0x0F) * 10) + (ret & 0x0F));
     }
 
     /**
@@ -154,45 +143,29 @@ public final class DateAndTimeConverter extends ByteConverter {
         this.putToPLC(buffer, byteOffset + OFFSET_MINUTE, c.get(Calendar.MINUTE));
         this.putToPLC(buffer, byteOffset + OFFSET_SECOND, c.get(Calendar.SECOND));
 
-
         final int millis = c.get(Calendar.MILLISECOND);
-        int msec1 = 0, msec10 = 0, msec100 = 0;
-        String mStr = Integer.toString(millis);
-
-        if (mStr.length() > 2) {
-            msec100 = Integer.parseInt(mStr.substring(0, 1));
-            msec10 = Integer.parseInt(mStr.substring(1, 2));
-            msec1 = Integer.parseInt(mStr.substring(2, 3));
-        } else if (mStr.length() > 1) {
-            msec10 = Integer.parseInt(mStr.substring(0, 1));
-            msec1 = Integer.parseInt(mStr.substring(1, 2));
-        } else {
-            msec1 = Integer.parseInt(mStr.substring(0, 1));
-        }
-
-        super.insert((byte) ((byte) msec10 | (byte) (msec100 << 4)), buffer,
-                OFFSET_MILLIS_100_10 + byteOffset, 0, 1);
-
-        int dow = c.get(Calendar.DAY_OF_WEEK);
-
-        super.insert((byte) ((byte) dow | (byte) (msec1 << 4)), buffer,
-                OFFSET_MILLIS_1_AND_DOW + byteOffset, 0, 1);
+        final int msec1 = millis % 10;
+        final int msec10 = millis % 100 / 10;
+        final int msec100 = millis / 100;
+        final int dow = c.get(Calendar.DAY_OF_WEEK);
+        super.insert((byte) ((byte) msec10 | (byte) (msec100 << 4)), buffer, OFFSET_MILLIS_100_10 + byteOffset, 0, 1);
+        super.insert((byte) ((byte) dow | (byte) (msec1 << 4)), buffer, OFFSET_MILLIS_1_AND_DOW + byteOffset, 0, 1);
     }
 
     /**
-     * Hex -> dec 0a = 10 0f = 16 10 = 17
+     * Hex -> dec: 0a = 10 0f = 16 10 = 17.
+     * <p>
+     * Note: 1 byte has 2 nibbles in BCD, allowing for decimal values from 0 to 99 represented.
      *
-     * @param buffer
-     * @param offset
-     * @param i
+     * @param buffer       write buffer for sending to PLC
+     * @param offset       offset in buffer
+     * @param decimalValue value to write as BCD
      */
-    public void putToPLC(final byte[] buffer, final int offset, final int i) {
-        try {
-            final int ret = Integer.parseInt("" + i, 16);
-            buffer[offset] = (byte) ret;
-        } catch (final NumberFormatException e) {
-            return;
+    void putToPLC(final byte[] buffer, final int offset, final int decimalValue) {
+        if (decimalValue < 0 || decimalValue > 99) {
+            throw new IllegalArgumentException("can not be stored in 1-byte-BCD: " + decimalValue);
         }
+        buffer[offset] = (byte) ((decimalValue / 10) << 4 | (decimalValue % 10));
     }
 
 }
