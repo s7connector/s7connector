@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.github.s7connector.impl.serializer.converter;
 
+import com.github.s7connector.exception.S7Exception;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class DateAndTimeConverterTest {
     public void putTest() {
         DateAndTimeConverter c = new DateAndTimeConverter();
         byte[] buffer = new byte[8];
-        c.putToPLC(buffer, 0, (byte) 0x10);
+        c.putAsBCD(buffer, 0, (byte) 0x10);
         Assert.assertEquals(0x16, buffer[0]);
     }
 
@@ -59,7 +60,7 @@ public class DateAndTimeConverterTest {
         DateAndTimeConverter c = new DateAndTimeConverter();
         byte[] buffer = new byte[8];
         buffer[0] = 0x16;
-        byte ret = c.getFromPLC(buffer, 0);
+        byte ret = c.getValueFromBCD(buffer, 0);
         Assert.assertEquals(0x10, ret);
     }
 
@@ -74,9 +75,8 @@ public class DateAndTimeConverterTest {
         DateAndTimeConverter c = new DateAndTimeConverter();
         byte[] buffer = new byte[8];
 
-        c.putToPLC(buffer, 0, b);
-
-        byte ret = c.getFromPLC(buffer, 0);
+        c.putAsBCD(buffer, 0, b);
+        byte ret = c.getValueFromBCD(buffer, 0);
 
         Assert.assertEquals(b, ret);
     }
@@ -157,5 +157,15 @@ public class DateAndTimeConverterTest {
         final Date testDate = getDateAt(2025, 8, 14, 1, 12, 9, 197);
         assertThrows(ArrayIndexOutOfBoundsException.class,
                 () -> c.insert(testDate, buffer, 0, 0, buffer.length));
+    }
+
+    @Test
+    public void yearOutOfOfRange() {
+        final DateAndTimeConverter c = new DateAndTimeConverter();
+        final byte[] buffer = new byte[8];
+        final Date valueFuture = getDateAt(2090, Calendar.JANUARY, 1, 1, 1, 1, 1);
+        assertThrows(S7Exception.class, () -> c.insert(valueFuture, buffer, 0, 0, buffer.length));
+        final Date valuePast = getDateAt(1989, Calendar.DECEMBER, 31, 23, 59, 59, 999);
+        assertThrows(S7Exception.class, () -> c.insert(valuePast, buffer, 0, 0, buffer.length));
     }
 }
