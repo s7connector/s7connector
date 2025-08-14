@@ -43,6 +43,7 @@ public final class DateAndTimeConverter extends ByteConverter {
     public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
         final Calendar c = Calendar.getInstance();
         c.clear();
+        c.setLenient(false);
 
         int year = this.getValueFromBCD(buffer, OFFSET_YEAR + byteOffset);
 
@@ -69,7 +70,8 @@ public final class DateAndTimeConverter extends ByteConverter {
 
         final byte upperMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_100_10 + byteOffset, bitOffset);
         final byte lowerMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_1_AND_DOW + byteOffset, bitOffset);
-        c.set(Calendar.MILLISECOND, (100 * (upperMillis >> 4)) + (10 * (upperMillis & 0x0F)) + (lowerMillis >> 4));
+        int valueMillis = (100 * (upperMillis >> 4 & 0x0F)) + (10 * (upperMillis & 0x0F)) + (lowerMillis >> 4 & 0x0F);
+        c.set(Calendar.MILLISECOND, valueMillis);
         // dayOfWeek is ignored by Calendar.selectField()'s implementation thus we save the time to set it.
         // Would have been: c.set(Calendar.DAY_OF_WEEK, (lowerMillis & 0x0F))
 
