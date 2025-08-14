@@ -32,6 +32,7 @@ public class DateAndTimeConverterTest {
      */
     private static Date getDateAt(int year, int month, int dayOfMonth, int hourOfDay, int minute, int seconds, int millis) {
         final Calendar calendar = Calendar.getInstance();
+        calendar.setLenient(false);
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -86,18 +87,19 @@ public class DateAndTimeConverterTest {
         DateAndTimeConverter c = new DateAndTimeConverter();
         byte[] buffer = new byte[8];
 
-        Random random = new Random();
+        final Random random = new Random();
 
         for (int i = 0; i < 50; i++) {
+            final int millis = random.nextInt(1000);
             Date d = getDateAt(
-                    random.nextInt(50) + 1991, random.nextInt(12), random.nextInt(30) + 1,
-                    random.nextInt(23), random.nextInt(60), random.nextInt(60), 0);
+                    random.nextInt(50) + 1991, random.nextInt(12), random.nextInt(28) + 1,
+                    random.nextInt(24), random.nextInt(60), random.nextInt(60), millis);
 
             c.insert(d, buffer, 0, 0, 8);
 
-            Date dout = c.extract(Date.class, buffer, 0, 0);
-
             System.out.println("expected: " + d.getTime());
+
+            Date dout = c.extract(Date.class, buffer, 0, 0);
             System.out.println("actual:   " + dout.getTime());
 
             Assert.assertEquals(d, dout);
@@ -108,15 +110,15 @@ public class DateAndTimeConverterTest {
     @Test
     public void extract1() {
         DateAndTimeConverter c = new DateAndTimeConverter();
-        byte[] buffer = new byte[8];
+        byte[] buffer = new byte[]{0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
 
         Date d = c.extract(Date.class, buffer, 0, 0);
 
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.YEAR, 1999);
-        calendar.set(Calendar.MONTH, Calendar.DECEMBER);
-        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        calendar.set(Calendar.YEAR, 2000);
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
 
         Assert.assertEquals(calendar.getTime(), d);
@@ -132,7 +134,10 @@ public class DateAndTimeConverterTest {
     @Test
     public void millisecondsGet() {
         final DateAndTimeConverter c = new DateAndTimeConverter();
-        final byte[] buffer = new byte[]{0x25, 0x08, 0x13, 0x11, 0x24, 0x01, 0x68, 0x64};
+        // buffer data is BCD-encoded by PLC
+        final byte[] buffer = new byte[]{0x25/*year*/, 0x08/*month*/, 0x13/*day*/,
+                0x11/*hour*/, 0x24/*minute*/, 0x01/*second*/,
+                0x68/*millis MSB*/, 0x64/*millis 4-bit-lsb; dayOfWeek*/};
         assertEquals(8, buffer.length);
         final Date result = c.extract(Date.class, buffer, 0, 0);
         assertEquals("actual millis=" + result.getTime() % 1000 + ", expected=" + (6 * 100 + 8 * 10 + 6),
