@@ -16,6 +16,7 @@ limitations under the License.
 package com.github.s7connector.impl.serializer.converter;
 
 import com.github.s7connector.api.S7Type;
+import com.github.s7connector.exception.S7Exception;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -43,7 +44,7 @@ public final class DateAndTimeConverter extends ByteConverter {
         final Calendar c = Calendar.getInstance();
         c.clear();
 
-        int year = this.getFromPLC(buffer, OFFSET_YEAR + byteOffset);
+        int year = this.getValueFromBCD(buffer, OFFSET_YEAR + byteOffset);
 
         if (year < 90) {
             // 1900 - 1989
@@ -53,7 +54,7 @@ public final class DateAndTimeConverter extends ByteConverter {
             year += 1900;
         }
 
-        int month = this.getFromPLC(buffer, OFFSET_MONTH + byteOffset);
+        int month = this.getValueFromBCD(buffer, OFFSET_MONTH + byteOffset);
 
         if (month > 0) {
             month--;
@@ -61,10 +62,10 @@ public final class DateAndTimeConverter extends ByteConverter {
 
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, this.getFromPLC(buffer, OFFSET_DAY + byteOffset));
-        c.set(Calendar.HOUR_OF_DAY, this.getFromPLC(buffer, OFFSET_HOUR + byteOffset));
-        c.set(Calendar.MINUTE, this.getFromPLC(buffer, OFFSET_MINUTE + byteOffset));
-        c.set(Calendar.SECOND, this.getFromPLC(buffer, OFFSET_SECOND + byteOffset));
+        c.set(Calendar.DAY_OF_MONTH, this.getValueFromBCD(buffer, OFFSET_DAY + byteOffset));
+        c.set(Calendar.HOUR_OF_DAY, this.getValueFromBCD(buffer, OFFSET_HOUR + byteOffset));
+        c.set(Calendar.MINUTE, this.getValueFromBCD(buffer, OFFSET_MINUTE + byteOffset));
+        c.set(Calendar.SECOND, this.getValueFromBCD(buffer, OFFSET_SECOND + byteOffset));
 
         final byte upperMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_100_10 + byteOffset, bitOffset);
         final byte lowerMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_1_AND_DOW + byteOffset, bitOffset);
@@ -82,7 +83,7 @@ public final class DateAndTimeConverter extends ByteConverter {
      * @param offset offset in buffer
      * @return value of BCD encoded number
      */
-    byte getFromPLC(final byte[] buffer, final int offset) {
+    byte getValueFromBCD(final byte[] buffer, final int offset) {
         final byte ret = super.extract(Byte.class, buffer, offset, 0);
         return (byte) (((byte) ((ret >> 4) & 0x0F) * 10) + (ret & 0x0F));
     }
@@ -123,10 +124,10 @@ public final class DateAndTimeConverter extends ByteConverter {
 
         int year = c.get(Calendar.YEAR);
 
-        /*
-         * if (year < 1990 || year > 2090) throw new
-         * S7Exception("Invalid year: " + year + " @ offset: " + byteOffset);
-         */
+
+        if (year < 1990 || year > 2089) {
+            throw new S7Exception("Invalid year: " + year + " @ offset: " + byteOffset);
+        }
 
         if (year < 2000) {
             // 1990 -1999
@@ -136,12 +137,12 @@ public final class DateAndTimeConverter extends ByteConverter {
             year -= 2000;
         }
 
-        this.putToPLC(buffer, byteOffset + OFFSET_YEAR, year);
-        this.putToPLC(buffer, byteOffset + OFFSET_MONTH, c.get(Calendar.MONTH) + 1);
-        this.putToPLC(buffer, byteOffset + OFFSET_DAY, c.get(Calendar.DAY_OF_MONTH));
-        this.putToPLC(buffer, byteOffset + OFFSET_HOUR, c.get(Calendar.HOUR_OF_DAY));
-        this.putToPLC(buffer, byteOffset + OFFSET_MINUTE, c.get(Calendar.MINUTE));
-        this.putToPLC(buffer, byteOffset + OFFSET_SECOND, c.get(Calendar.SECOND));
+        this.putAsBCD(buffer, byteOffset + OFFSET_YEAR, year);
+        this.putAsBCD(buffer, byteOffset + OFFSET_MONTH, c.get(Calendar.MONTH) + 1);
+        this.putAsBCD(buffer, byteOffset + OFFSET_DAY, c.get(Calendar.DAY_OF_MONTH));
+        this.putAsBCD(buffer, byteOffset + OFFSET_HOUR, c.get(Calendar.HOUR_OF_DAY));
+        this.putAsBCD(buffer, byteOffset + OFFSET_MINUTE, c.get(Calendar.MINUTE));
+        this.putAsBCD(buffer, byteOffset + OFFSET_SECOND, c.get(Calendar.SECOND));
 
         final int millis = c.get(Calendar.MILLISECOND);
         final int msec1 = millis % 10;
@@ -161,9 +162,9 @@ public final class DateAndTimeConverter extends ByteConverter {
      * @param offset       offset in buffer
      * @param decimalValue value to write as BCD
      */
-    void putToPLC(final byte[] buffer, final int offset, final int decimalValue) {
+    void putAsBCD(final byte[] buffer, final int offset, final int decimalValue) {
         if (decimalValue < 0 || decimalValue > 99) {
-            throw new IllegalArgumentException("can not be stored in 1-byte-BCD: " + decimalValue);
+            throw new S7Exception("can not be stored in 1-byte-BCD: " + decimalValue);
         }
         buffer[offset] = (byte) ((decimalValue / 10) << 4 | (decimalValue % 10));
     }
