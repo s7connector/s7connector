@@ -15,172 +15,160 @@ limitations under the License.
 */
 package com.github.s7connector.impl.serializer.converter;
 
+import com.github.s7connector.api.S7Type;
+import com.github.s7connector.exception.S7Exception;
+
 import java.util.Calendar;
 import java.util.Date;
 
-import com.github.s7connector.api.S7Type;
-
 public final class DateAndTimeConverter extends ByteConverter {
 
-	public static final int OFFSET_DAY = 2;
-	public static final int OFFSET_HOUR = 3;
-	public static final int OFFSET_MILLIS_1_AND_DOW = 7;
-	public static final int OFFSET_MILLIS_100_10 = 6;
-	public static final int OFFSET_MINUTE = 4;
-	public static final int OFFSET_MONTH = 1;
-	public static final int OFFSET_SECOND = 5;
-	public static final int OFFSET_YEAR = 0;
+    public static final int OFFSET_DAY = 2;
+    public static final int OFFSET_HOUR = 3;
+    public static final int OFFSET_MILLIS_1_AND_DOW = 7;
+    public static final int OFFSET_MILLIS_100_10 = 6;
+    public static final int OFFSET_MINUTE = 4;
+    public static final int OFFSET_MONTH = 1;
+    public static final int OFFSET_SECOND = 5;
+    public static final int OFFSET_YEAR = 0;
 
-	// 18, 1,16,16, 5,80,0,3, (dec)
-	// 12, 1,10,10, 5,50,0,3, (hex)
-	// 12-01-10 10:05:50.000
+    // 18, 1,16,16, 5,80,0,3, (dec)
+    // 12, 1,10,10, 5,50,0,3, (hex)
+    // 12-01-10 10:05:50.000
 
-	/** {@inheritDoc} */
-	@Override
-	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
-		final Calendar c = Calendar.getInstance();
-		c.clear();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
+        final Calendar c = Calendar.getInstance();
+        c.clear();
+        c.setLenient(false);
 
-		int year = this.getFromPLC(buffer, OFFSET_YEAR + byteOffset);
+        int year = this.getValueFromBCD(buffer, OFFSET_YEAR + byteOffset);
 
-		if (year < 90) {
-			// 1900 - 1989
-			year += 2000;
-		} else {
-			// 2000 - 2090
-			year += 1900;
-		}
+        if (year < 90) {
+            // 1900 - 1989
+            year += 2000;
+        } else {
+            // 2000 - 2090
+            year += 1900;
+        }
 
-		int month = this.getFromPLC(buffer, OFFSET_MONTH + byteOffset);
+        int month = this.getValueFromBCD(buffer, OFFSET_MONTH + byteOffset);
 
-		if (month > 0) {
-			month--;
-		}
+        if (month > 0) {
+            month--;
+        }
 
-		c.set(Calendar.YEAR, year);
-		c.set(Calendar.MONTH, month);
-		c.set(Calendar.DAY_OF_MONTH, this.getFromPLC(buffer, OFFSET_DAY + byteOffset));
-		c.set(Calendar.HOUR_OF_DAY, this.getFromPLC(buffer, OFFSET_HOUR + byteOffset));
-		c.set(Calendar.MINUTE, this.getFromPLC(buffer, OFFSET_MINUTE + byteOffset));
-		c.set(Calendar.SECOND, this.getFromPLC(buffer, OFFSET_SECOND + byteOffset));
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, this.getValueFromBCD(buffer, OFFSET_DAY + byteOffset));
+        c.set(Calendar.HOUR_OF_DAY, this.getValueFromBCD(buffer, OFFSET_HOUR + byteOffset));
+        c.set(Calendar.MINUTE, this.getValueFromBCD(buffer, OFFSET_MINUTE + byteOffset));
+        c.set(Calendar.SECOND, this.getValueFromBCD(buffer, OFFSET_SECOND + byteOffset));
 
-		/*
-		 * TODO byte upperMillis = super.extract(Byte.class, buffer,
-		 * OFFSET_MILLIS_100_10+byteOffset, bitOffset); byte lowerMillis =
-		 * super.extract(Byte.class, buffer, OFFSET_MILLIS_1_AND_DOW+byteOffset,
-		 * bitOffset);
-		 *
-		 * int ms100 = ( upperMillis >> 4 ); int ms10 = ( upperMillis & 0x0F );
-		 * int ms1 = ( lowerMillis >> 4 );
-		 *
-		 * int millis = ms1 + ( 10*ms10 ) + ( 100*ms100 );
-		 * c.set(Calendar.MILLISECOND, millis);
-		 *
-		 * int dow = ( lowerMillis & 0x0F ); c.set(Calendar.DAY_OF_WEEK, dow);
-		 */
+        final byte upperMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_100_10 + byteOffset, bitOffset);
+        final byte lowerMillis = super.extract(Byte.class, buffer, OFFSET_MILLIS_1_AND_DOW + byteOffset, bitOffset);
+        int valueMillis = (100 * (upperMillis >> 4 & 0x0F)) + (10 * (upperMillis & 0x0F)) + (lowerMillis >> 4 & 0x0F);
+        c.set(Calendar.MILLISECOND, valueMillis);
+        // dayOfWeek is ignored by Calendar.selectField()'s implementation thus we save the time to set it.
+        // Would have been: c.set(Calendar.DAY_OF_WEEK, (lowerMillis & 0x0F))
 
-		return targetClass.cast(c.getTime());
-	}
+        return targetClass.cast(c.getTime());
+    }
 
-	/**
-	 * Dec -> Hex 10 = 0a 16 = 0f 17 = 10
-	 *
-	 * @param buffer
-	 * @param offset
-	 * @return
-	 */
-	public byte getFromPLC(final byte[] buffer, final int offset) {
-		try {
-			final byte ret = super.extract(Byte.class, buffer, offset, 0);
-			return (byte) Integer.parseInt(Integer.toHexString(ret & 0xFF));
-		} catch (final NumberFormatException e) {
-			return 0;
-		}
-	}
+    /**
+     * Dec -> Hex 10 = 0a 16 = 0f 17 = 10
+     *
+     * @param buffer buffer read from PLC
+     * @param offset offset in buffer
+     * @return value of BCD encoded number
+     */
+    byte getValueFromBCD(final byte[] buffer, final int offset) {
+        final byte ret = super.extract(Byte.class, buffer, offset, 0);
+        return (byte) (((byte) ((ret >> 4) & 0x0F) * 10) + (ret & 0x0F));
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public S7Type getS7Type() {
-		return S7Type.DATE_AND_TIME;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public S7Type getS7Type() {
+        return S7Type.DATE_AND_TIME;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public int getSizeInBits() {
-		return 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getSizeInBits() {
+        return 0;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public int getSizeInBytes() {
-		return 8;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getSizeInBytes() {
+        return 8;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public void insert(final Object javaType, final byte[] buffer, final int byteOffset, final int bitOffset,
-			final int size) {
-		final Date date = (Date) javaType;
-		final Calendar c = Calendar.getInstance();
-		c.setTime(date);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void insert(final Object javaType, final byte[] buffer, final int byteOffset, final int bitOffset,
+                       final int size) {
+        final Date date = (Date) javaType;
+        final Calendar c = Calendar.getInstance();
+        c.setTime(date);
 
-		int year = c.get(Calendar.YEAR);
+        int year = c.get(Calendar.YEAR);
 
-		/*
-		 * if (year < 1990 || year > 2090) throw new
-		 * S7Exception("Invalid year: " + year + " @ offset: " + byteOffset);
-		 */
 
-		if (year < 2000) {
-			// 1990 -1999
-			year -= 1900;
-		} else {
-			// 2000 - 2089
-			year -= 2000;
-		}
+        if (year < 1990 || year > 2089) {
+            throw new S7Exception("Invalid year: " + year + " @ offset: " + byteOffset);
+        }
 
-		this.putToPLC(buffer, byteOffset + OFFSET_YEAR, year);
-		this.putToPLC(buffer, byteOffset + OFFSET_MONTH, c.get(Calendar.MONTH) + 1);
-		this.putToPLC(buffer, byteOffset + OFFSET_DAY, c.get(Calendar.DAY_OF_MONTH));
-		this.putToPLC(buffer, byteOffset + OFFSET_HOUR, c.get(Calendar.HOUR_OF_DAY));
-		this.putToPLC(buffer, byteOffset + OFFSET_MINUTE, c.get(Calendar.MINUTE));
-		this.putToPLC(buffer, byteOffset + OFFSET_SECOND, c.get(Calendar.SECOND));
+        if (year < 2000) {
+            // 1990 -1999
+            year -= 1900;
+        } else {
+            // 2000 - 2089
+            year -= 2000;
+        }
 
-		/*
-		 * TODO int msec1 = 0, msec10 = 0, msec100 = 0; Integer millis =
-		 * c.get(Calendar.MILLISECOND); String mStr = millis.toString();
-		 *
-		 * if (mStr.length() > 2) { msec100 = Integer.parseInt(
-		 * mStr.substring(0, 1) ); msec10 = Integer.parseInt( mStr.substring(1,
-		 * 2) ); msec1 = Integer.parseInt( mStr.substring(2, 3) ); } else if
-		 * (mStr.length() > 1) { msec10 = Integer.parseInt( mStr.substring(0, 1)
-		 * ); msec1 = Integer.parseInt( mStr.substring(1, 2) ); } else { msec1 =
-		 * Integer.parseInt( mStr.substring(0, 1) ); }
-		 *
-		 * super.insert( (byte)( (byte)msec10 | (byte)(msec100 << 4) ), buffer,
-		 * OFFSET_MILLIS_100_10+byteOffset, 0, 1);
-		 *
-		 * int dow = c.get(Calendar.DAY_OF_WEEK);
-		 *
-		 * super.insert( (byte)( (byte)dow | (byte)(msec1 << 4) ), buffer,
-		 * OFFSET_MILLIS_1_AND_DOW+byteOffset, 0, 1);
-		 */
-	}
+        this.putAsBCD(buffer, byteOffset + OFFSET_YEAR, year);
+        this.putAsBCD(buffer, byteOffset + OFFSET_MONTH, c.get(Calendar.MONTH) + 1);
+        this.putAsBCD(buffer, byteOffset + OFFSET_DAY, c.get(Calendar.DAY_OF_MONTH));
+        this.putAsBCD(buffer, byteOffset + OFFSET_HOUR, c.get(Calendar.HOUR_OF_DAY));
+        this.putAsBCD(buffer, byteOffset + OFFSET_MINUTE, c.get(Calendar.MINUTE));
+        this.putAsBCD(buffer, byteOffset + OFFSET_SECOND, c.get(Calendar.SECOND));
 
-	/**
-	 * Hex -> dec 0a = 10 0f = 16 10 = 17
-	 *
-	 * @param buffer
-	 * @param offset
-	 * @param i
-	 */
-	public void putToPLC(final byte[] buffer, final int offset, final int i) {
-		try {
-			final int ret = Integer.parseInt("" + i, 16);
-			buffer[offset] = (byte) ret;
-		} catch (final NumberFormatException e) {
-			return;
-		}
-	}
+        final int millis = c.get(Calendar.MILLISECOND);
+        final int msec1 = millis % 10;
+        final int msec10 = millis % 100 / 10;
+        final int msec100 = millis / 100;
+        final int dow = c.get(Calendar.DAY_OF_WEEK);
+        super.insert((byte) ((byte) msec10 | (byte) (msec100 << 4)), buffer, OFFSET_MILLIS_100_10 + byteOffset, 0, 1);
+        super.insert((byte) ((byte) dow | (byte) (msec1 << 4)), buffer, OFFSET_MILLIS_1_AND_DOW + byteOffset, 0, 1);
+    }
+
+    /**
+     * Hex -> dec: 0a = 10 0f = 16 10 = 17.
+     * <p>
+     * Note: 1 byte has 2 nibbles in BCD, allowing for decimal values from 0 to 99 represented.
+     *
+     * @param buffer       write buffer for sending to PLC
+     * @param offset       offset in buffer
+     * @param decimalValue value to write as BCD
+     */
+    void putAsBCD(final byte[] buffer, final int offset, final int decimalValue) {
+        if (decimalValue < 0 || decimalValue > 99) {
+            throw new S7Exception("can not be stored in 1-byte-BCD: " + decimalValue);
+        }
+        buffer[offset] = (byte) ((decimalValue / 10) << 4 | (decimalValue % 10));
+    }
 
 }
