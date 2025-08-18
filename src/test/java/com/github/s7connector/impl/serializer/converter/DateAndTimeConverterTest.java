@@ -18,6 +18,8 @@ package com.github.s7connector.impl.serializer.converter;
 import com.github.s7connector.exception.S7Exception;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -27,20 +29,28 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 public class DateAndTimeConverterTest {
+    private static final Logger log = LoggerFactory.getLogger(DateAndTimeConverterTest.class);
+
     /**
      * Utility method to create Date instance without deprecation warnings.
      */
     private static Date getDateAt(int year, int month, int dayOfMonth, int hourOfDay, int minute, int seconds, int millis) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setLenient(false);
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, seconds);
-        calendar.set(Calendar.MILLISECOND, millis);
-        return calendar.getTime();
+        try {
+            final Calendar calendar = Calendar.getInstance();
+            calendar.setLenient(false);
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            calendar.set(Calendar.SECOND, seconds);
+            calendar.set(Calendar.MILLISECOND, millis);
+            return calendar.getTime();
+        } catch (IllegalArgumentException e) {
+            log.error("getDateAt({},{},{},{},{},{},{}) is invalid",
+                    year, month, dayOfMonth, hourOfDay, minute, seconds, millis);
+            throw e;
+        }
     }
 
 
@@ -84,23 +94,29 @@ public class DateAndTimeConverterTest {
 
     @Test
     public void loop() {
+        // seed 195 produces the 1999-02-28 which does not exist (dayOfMonth from 1..28)
+        executeLoop(new Random(195));
+        // seed 175 produces 2011-02-27 02:08:52.927, which also triggers IllegalArgumentException: HOUR_OF_DAY: 2 -> 3 (dayOfMonth from 1..27)
+        executeLoop(new Random(175));
+        for (int i = 0; i < 256; ++i) {
+            executeLoop(new Random(i));
+        }
+        executeLoop(new Random());
+    }
+
+    private void executeLoop(Random random) {
         DateAndTimeConverter c = new DateAndTimeConverter();
         byte[] buffer = new byte[8];
-
-        final Random random = new Random();
 
         for (int i = 0; i < 50; i++) {
             final int millis = random.nextInt(1000);
             Date d = getDateAt(
-                    random.nextInt(50) + 1991, random.nextInt(12), random.nextInt(28) + 1,
+                    random.nextInt(50) + 1991, random.nextInt(12), random.nextInt(26) + 1,
                     random.nextInt(24), random.nextInt(60), random.nextInt(60), millis);
 
             c.insert(d, buffer, 0, 0, 8);
 
-            System.out.println("expected: " + d.getTime());
-
             Date dout = c.extract(Date.class, buffer, 0, 0);
-            System.out.println("actual:   " + dout.getTime());
 
             Assert.assertEquals(d, dout);
             Assert.assertEquals(d.getTime(), dout.getTime());
