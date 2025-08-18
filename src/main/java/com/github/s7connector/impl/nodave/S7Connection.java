@@ -19,9 +19,9 @@
 */
 package com.github.s7connector.impl.nodave;
 
-import java.util.concurrent.Semaphore;
-
 import com.github.s7connector.api.DaveArea;
+
+import java.util.concurrent.Semaphore;
 
 /**
  * This class comprises the variables and methods common to connections to an S7
@@ -354,7 +354,11 @@ public abstract class S7Connection {
 	 */
 	public int writeBytes(final DaveArea area, final int DBnum, final int start, final int len, final byte[] buffer) {
 		int errorState = 0;
-		this.semaphore.release();
+		try {
+			this.semaphore.acquire();
+		} catch (final InterruptedException e) {
+			e.printStackTrace();
+		}
 		final PDU p1 = new PDU(this.msgOut, this.PDUstartOut);
 
 		// p1.constructWriteRequest(area, DBnum, start, len, buffer);
