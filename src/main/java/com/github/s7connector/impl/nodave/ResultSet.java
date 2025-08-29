@@ -21,10 +21,10 @@ package com.github.s7connector.impl.nodave;
 
 /**
  * @author Thomas Hergenhahn
- *
  */
 public final class ResultSet {
-	private int errorState, numResults;
+	private int errorState;
+	private int numResults;
 	public Result[] results;
 
 	public int getErrorState() {
@@ -33,7 +33,9 @@ public final class ResultSet {
 
 	public int getNumResults() {
 		return this.numResults;
-	};
+	}
+
+	;
 
 	public void setErrorState(final int error) {
 		this.errorState = error;

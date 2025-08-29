@@ -19,6 +19,8 @@
 */
 package com.github.s7connector.impl.nodave;
 
+import java.io.IOException;
+
 /**
  * The Class TCPConnection.
  */
@@ -62,14 +64,14 @@ public final class TCPConnection extends S7Connection {
      *
      * @return the int
      */
-    public int connectPLC() {
+    public int connectPLC() throws IOException {
         int packetLength;
         if (iface.protocol == Nodave.PROTOCOL_ISOTCP243) {
-        	final byte[] b243 = {
-        			(byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
-        			(byte) 0xC1, (byte) 0x02, (byte) 0x4D, (byte) 0x57, (byte) 0xC2, (byte) 0x02, (byte) 0x4D, (byte) 0x57,
-        			(byte) 0xC0, (byte) 0x01, (byte) 0x09
-        	};
+            final byte[] b243 = {
+                    (byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+                    (byte) 0xC1, (byte) 0x02, (byte) 0x4D, (byte) 0x57, (byte) 0xC2, (byte) 0x02, (byte) 0x4D, (byte) 0x57,
+                    (byte) 0xC0, (byte) 0x01, (byte) 0x09
+            };
             System.arraycopy(b243, 0, this.msgOut, 4, b243.length);
             packetLength = b243.length;
         } else {
@@ -96,7 +98,7 @@ public final class TCPConnection extends S7Connection {
      * {@inheritDoc}
      */
     @Override
-    public int exchange(final PDU p1) {
+    public int exchange(final PDU p1) throws IOException {
         this.msgOut[4] = (byte) 0x02;
         this.msgOut[5] = (byte) 0xf0;
         this.msgOut[6] = (byte) 0x80;
@@ -110,7 +112,7 @@ public final class TCPConnection extends S7Connection {
      *
      * @return the int
      */
-    protected int readISOPacket() {
+    private int readISOPacket() throws IOException {
         int res = this.iface.read(this.msgIn, 0, 4);
         if (res == 4) {
             final int len = (0x100 * this.msgIn[2]) + this.msgIn[3];
@@ -125,21 +127,13 @@ public final class TCPConnection extends S7Connection {
      * Send iso packet.
      *
      * @param size the size
-     * @return the int
      */
-    protected int sendISOPacket(int size) {
+    private void sendISOPacket(int size) throws IOException {
         size += 4;
         this.msgOut[0] = (byte) 0x03;
         this.msgOut[1] = (byte) 0x0;
         this.msgOut[2] = (byte) (size / 0x100);
         this.msgOut[3] = (byte) (size % 0x100);
-        /*
-         * if (messageNumber == 0) { messageNumber = 1; msgOut[11] = (byte)
-         * ((messageNumber + 1) & 0xff); messageNumber++; messageNumber &= 0xff;
-         * //!! }
-         */
-
         this.iface.write(this.msgOut, 0, size);
-        return 0;
     }
 }
