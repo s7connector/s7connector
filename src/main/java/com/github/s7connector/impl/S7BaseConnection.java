@@ -20,6 +20,8 @@ import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.impl.nodave.Nodave;
 import com.github.s7connector.impl.nodave.S7Connection;
 
+import java.io.IOException;
+
 /**
  * Base-Connection for the S7-PLC Connection Libnodave:
  * http://libnodave.sourceforge.net/
@@ -28,7 +30,9 @@ import com.github.s7connector.impl.nodave.S7Connection;
  */
 public abstract class S7BaseConnection implements S7Connector {
 
-	/** The Constant MAX_SIZE. */
+	/**
+	 * The Constant MAX_SIZE.
+	 */
 	private static final int MAX_SIZE = 96;
 
 	/** The Constant PROPERTY_AREA. */
@@ -81,9 +85,11 @@ public abstract class S7BaseConnection implements S7Connector {
 		this.dc = dc;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public synchronized byte[] read(final DaveArea area, final int areaNumber, final int bytes, final int offset) {
+	public synchronized byte[] read(final DaveArea area, final int areaNumber, final int bytes, final int offset) throws IOException {
 		if (bytes > MAX_SIZE) {
 			final byte[] ret = new byte[bytes];
 
@@ -103,10 +109,11 @@ public abstract class S7BaseConnection implements S7Connector {
 		}
 	}
 
-
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public synchronized void write(final DaveArea area, final int areaNumber, final int offset, final byte[] buffer) {
+	public synchronized void write(final DaveArea area, final int areaNumber, final int offset, final byte[] buffer) throws IOException {
 		if (buffer.length > MAX_SIZE) {
 			// Split buffer
 			final byte[] subBuffer = new byte[MAX_SIZE];
@@ -124,6 +131,4 @@ public abstract class S7BaseConnection implements S7Connector {
 			checkResult(ret);
 		}
 	}
-
-
 }
