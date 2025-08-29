@@ -30,7 +30,6 @@ import java.util.concurrent.Semaphore;
  * @author Thomas Hergenhahn
  */
 public abstract class S7Connection {
-    static int tmo_normal = 150;
     int answLen; // length of last message
     /**
      * position in result data, incremented when variables are extracted without
@@ -46,15 +45,14 @@ public abstract class S7Connection {
     public int packetNumber = 0; // packetNumber in transport layer
     public int PDUstartIn;
     public int PDUstartOut;
-    PDU rcvdPDU;
-    public Semaphore semaphore;
+    private final Semaphore semaphore;
 
     /**
      * absolute begin of result data
      */
     int udata;
 
-    public S7Connection(final PLCinterface ifa) {
+    protected S7Connection(final PLCinterface ifa) {
         this.iface = ifa;
         this.msgIn = new byte[Nodave.MAX_RAW_LEN];
         this.msgOut = new byte[Nodave.MAX_RAW_LEN];
@@ -63,78 +61,7 @@ public abstract class S7Connection {
         this.semaphore = new Semaphore(1);
     }
 
-    abstract public int exchange(PDU p1);
-
-    // int numResults;
-    /*
-     * class Result { int error; byte[] data; }
-     */
-    /*
-     * Read a predefined set of values from the PLC. Return ok or an error state
-     * If a buffer pointer is provided, data will be copied into this buffer. If
-     * it's NULL you can get your data from the resultPointer in daveConnection
-     * long as you do not send further requests.
-     */
-    private ResultSet execReadRequest(final PDU p) {
-        PDU p2;
-        int errorState;
-        errorState = this.exchange(p);
-
-        p2 = new PDU(this.msgIn, this.PDUstartIn);
-        p2.setupReceivedPDU();
-        /*
-         * if (p2.udlen == 0) { dataPointer = 0; answLen = 0; return
-         * Nodave.RESULT_CPU_RETURNED_NO_DATA; }
-         */
-        final ResultSet rs = new ResultSet();
-        if (p2.mem[p2.param + 0] == PDU.FUNC_READ) {
-            int numResults = p2.mem[p2.param + 1];
-            // System.out.println("Results " + numResults);
-            rs.results = new Result[numResults];
-            int pos = p2.data;
-            for (int i = 0; i < numResults; i++) {
-                final Result r = new Result();
-                r.error = Nodave.USByte(p2.mem, pos);
-                if (r.error == 255) {
-
-                    final int type = Nodave.USByte(p2.mem, pos + 1);
-                    int len = Nodave.USBEWord(p2.mem, pos + 2);
-                    r.error = 0;
-                    // System.out.println("Raw length " + len);
-                    if (type == 4) {
-                        len /= 8;
-                    } else if (type == 3) {
-                        ; // length is ok
-                    }
-
-                    // System.out.println("Byte length " + len);
-                    // r.data = new byte[len];
-
-                    // System.arraycopy(p2.mem, pos + 4, r.data, 0, len);
-                    // Nodave.dump("Result " + i + ":", r.data, 0, len);
-                    r.bufferStart = pos + 4;
-                    pos += len;
-                    if ((len % 2) == 1) {
-                        pos++;
-                    }
-                } else {
-                    System.out.println("Error " + r.error);
-                }
-                pos += 4;
-                rs.results[i] = r;
-            }
-            numResults = p2.mem[p2.param + 1];
-            rs.setNumResults(numResults);
-            this.dataPointer = p2.udata;
-            this.answLen = p2.udlen;
-            // }
-        } else {
-            errorState |= 2048;
-        }
-        this.semaphore.release();
-        rs.setErrorState(errorState);
-        return rs;
-    }
+    public abstract int exchange(PDU p1);
 
     public int getBYTE() {
         this.dataPointer += 1;
@@ -146,8 +73,7 @@ public abstract class S7Connection {
     }
 
     public int getCHAR() {
-        this.dataPointer += 1;
-        return Nodave.SByte(this.msgIn, this.dataPointer - 1);
+        return getBYTE();
     }
 
     public int getCHAR(final int pos) {
@@ -173,7 +99,6 @@ public abstract class S7Connection {
      * get an unsigned 32bit value from the specified position in result bytes
      */
     public long getDWORD(final int pos) {
-        // System.out.println("getDWORD pos " + pos);
         return Nodave.USBELong(this.msgIn, this.udata + pos);
     }
 
@@ -194,7 +119,6 @@ public abstract class S7Connection {
      * get a float value from the specified position in result bytes
      */
     public float getFloat(final int pos) {
-        // System.out.println("getFloat pos " + pos);
         return Nodave.BEFloat(this.msgIn, this.udata + pos);
     }
 
@@ -211,9 +135,6 @@ public abstract class S7Connection {
         return 0;
     }
 
-    /*
-     * public void sendYOURTURN() { }
-     */
     public int getResponse() {
         return 0;
     }
@@ -271,7 +192,7 @@ public abstract class S7Connection {
     public int negPDUlengthRequest() {
         int res;
         final PDU p = new PDU(this.msgOut, this.PDUstartOut);
-        final byte pa[] = {(byte) 0xF0, 0, 0x00, 0x01, 0x00, 0x01, 0x03, (byte) 0xC0,};
+        final byte[] pa = {(byte) 0xF0, 0, 0x00, 0x01, 0x00, 0x01, 0x03, (byte) 0xC0,};
         p.initHeader(1);
         p.addParam(pa);
         res = this.exchange(p);
@@ -338,16 +259,12 @@ public abstract class S7Connection {
     }
 
     public int useResult(final ResultSet rs, final int number) {
-        System.out.println("rs.getNumResults: " + rs.getNumResults() + " number: " + number);
         if (rs.getNumResults() > number) {
             this.dataPointer = rs.results[number].bufferStart;
             return 0;
-            // udata=rs.results[number].bufferStart;
         }
         return -33;
     }
-
-    ;
 
     /*
      * Write len bytes to PLC memory area "area", data block DBnum.

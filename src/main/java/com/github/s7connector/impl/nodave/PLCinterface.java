@@ -30,7 +30,6 @@ public final class PLCinterface {
 
 	OutputStream out;
 	int protocol; // The kind of transport used on this interface.
-	int wp, rp;
 
 	public PLCinterface(final OutputStream out, final InputStream in, final String name, final int localMPI,
 			final int protocol) {
